@@ -1119,7 +1119,11 @@ static int	process_trap(zbx_socket_t *sock, char *s, zbx_timespec_t *ts)
 			}
 			else if (0 == strcmp(value, ZBX_PROTO_VALUE_AGENT_CONFIG))
 			{
-				ret = send_agent_configuration(sock, &jp);
+				ret = zbx_send_agent_configuration(sock, &jp);
+			}
+			else if (0 == strcmp(value, ZBX_PROTO_VALUE_AGENT_DATA))
+			{
+				ret = zbx_get_agent_data(sock, &jp);
 			}
 			else if (0 == strcmp(value, ZBX_PROTO_VALUE_COMMAND))
 			{

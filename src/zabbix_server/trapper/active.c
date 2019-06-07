@@ -699,7 +699,7 @@ out:
  *                FAIL - an error occurred                                    *
  *                                                                            *
  ******************************************************************************/
-int	send_agent_configuration(zbx_socket_t *sock, struct zbx_json_parse *jp)
+int	zbx_send_agent_configuration(zbx_socket_t *sock, struct zbx_json_parse *jp)
 {
 	char			host[HOST_HOST_LEN_MAX], tmp[MAX_STRING_LEN], ip[INTERFACE_IP_LEN_MAX],
 				error[MAX_STRING_LEN], *host_metadata = NULL;
@@ -915,3 +915,13 @@ out:
 
 	return ret;
 }
+
+int	zbx_get_agent_data(zbx_socket_t *sock, struct zbx_json_parse *jp)
+{
+
+
+
+	return FAIL;
+}
+
+

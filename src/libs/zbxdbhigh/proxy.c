@@ -3131,6 +3131,40 @@ static int	agent_item_validator(DC_ITEM *item, zbx_socket_t *sock, void *args, c
 
 /******************************************************************************
  *                                                                            *
+ * Function: agent_item_validator                                             *
+ *                                                                            *
+ * Purpose: validates item received from active agent                         *
+ *                                                                            *
+ * Parameters: item  - [IN] the item data                                     *
+ *             sock  - [IN] the connection socket                             *
+ *             args  - [IN] the validator arguments                           *
+ *             error - [OUT] the error message                                *
+ *                                                                            *
+ * Return value:  SUCCEED - the validation was successful                     *
+ *                FAIL    - otherwise                                         *
+ *                                                                            *
+ ******************************************************************************/
+static int	agent_item_validator_xt(DC_ITEM *item, zbx_socket_t *sock, void *args, char **error)
+{
+	zbx_host_rights_t	*rights = (zbx_host_rights_t *)args;
+
+	if (0 != item->host.proxy_hostid)
+		return FAIL;
+
+	if (ITEM_TYPE_ZABBIX_XT != item->type)
+		return FAIL;
+
+	if (rights->hostid != item->host.hostid)
+	{
+		rights->hostid = item->host.hostid;
+		rights->value = zbx_host_check_permissions(&item->host, sock, error);
+	}
+
+	return rights->value;
+}
+
+/******************************************************************************
+ *                                                                            *
  * Function: sender_item_validator                                            *
  *                                                                            *
  * Purpose: validates item received from sender                               *
@@ -3201,6 +3235,100 @@ static int	sender_item_validator(DC_ITEM *item, zbx_socket_t *sock, void *args, 
 
 /******************************************************************************
  *                                                                            *
+ * Function: process_agent_data_history_data                                  *
+ *                                                                            *
+ * Purpose: process agent history data                                        *
+ *                                                                            *
+ * Parameters: sock           - [IN] the connection socket                    *
+ *             jp             - [IN] JSON with historical data                *
+ *             ts             - [IN] the client connection timestamp          *
+ *             token          - [IN] the data session token                   *
+ *             validator_func - [IN] the item validator callback function     *
+ *             validator_args - [IN] the user arguments passed to validator   *
+ *                                   function                                 *
+ *             info           - [OUT] address of a pointer to the info string *
+ *                                    (should be freed by the caller)         *
+ *                                                                            *
+ * Return value:  SUCCEED - processed successfully                            *
+ *                FAIL - an error occurred                                    *
+ *                                                                            *
+ ******************************************************************************/
+static int	process_agent_data_history_data(zbx_socket_t *sock, struct zbx_json_parse *jp_data, zbx_timespec_t *ts,
+		const char *token, void *validator_args, int *processed_num, int *total_num)
+{
+	int			values_num, read_num, i;
+	zbx_timespec_t		unique_shift = {0, 0};
+	const char		*pnext = NULL;
+	char			*error = NULL;
+	zbx_host_key_t		*hostkeys;
+	DC_ITEM			*items;
+	double			sec;
+	zbx_data_session_t	*session = NULL;
+	zbx_uint64_t		itemids[ZBX_HISTORY_VALUES_MAX];
+	zbx_agent_value_t	values[ZBX_HISTORY_VALUES_MAX];
+	int			errcodes[ZBX_HISTORY_VALUES_MAX];
+
+	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __func__);
+
+	sec = zbx_time();
+
+	items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * ZBX_HISTORY_VALUES_MAX);
+
+	while (SUCCEED == parse_history_data_33(jp_data, &pnext, values, itemids, &values_num, &read_num,
+			&unique_shift, &error) && 0 != values_num)
+	{
+		DCconfig_get_items_by_itemids(items, itemids, errcodes, values_num);
+
+		for (i = 0; i < values_num; i++)
+		{
+			if (SUCCEED != errcodes[i])
+				continue;
+
+			if (NULL != token && NULL == session)
+				session = zbx_dc_get_or_create_data_session(items[i].host.hostid, token);
+
+			/* check and discard if duplicate data */
+			if (NULL != session && 0 != values[i].id && values[i].id <= session->last_valueid)
+			{
+				DCconfig_clean_items(&items[i], &errcodes[i], 1);
+				errcodes[i] = FAIL;
+				continue;
+			}
+
+			if (SUCCEED != agent_item_validator_xt(&items[i], sock, validator_args, &error))
+			{
+				if (NULL != error)
+				{
+					zabbix_log(LOG_LEVEL_WARNING, "%s", error);
+					zbx_free(error);
+				}
+
+				DCconfig_clean_items(&items[i], &errcodes[i], 1);
+				errcodes[i] = FAIL;
+			}
+
+			if (NULL != session)
+				session->last_valueid = values[i].id;
+		}
+
+		*processed_num += process_history_data(items, values, errcodes, values_num);
+		*total_num += read_num;
+
+		DCconfig_clean_items(items, errcodes, values_num);
+		zbx_agent_values_clean(values, values_num);
+
+		if (NULL == pnext)
+			break;
+	}
+
+	zbx_free(items);
+	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
+
+	return SUCCEED;
+}
+
+/******************************************************************************
+ *                                                                            *
  * Function: process_client_history_data                                      *
  *                                                                            *
  * Purpose: process history data sent by proxy/agent/sender                   *
@@ -3241,12 +3369,6 @@ static int	process_client_history_data(zbx_socket_t *sock, struct zbx_json_parse
 
 	sec = zbx_time();
 
-	if (SUCCEED != (ret = zbx_json_brackets_by_name(jp, ZBX_PROTO_TAG_DATA, &jp_data)))
-	{
-		*info = zbx_strdup(*info, zbx_json_strerror());
-		goto out;
-	}
-
 	if (SUCCEED == zbx_json_value_by_name_dyn(jp, ZBX_PROTO_TAG_SESSION, &token, &token_alloc))
 	{
 		size_t	token_len;
@@ -3258,6 +3380,19 @@ static int	process_client_history_data(zbx_socket_t *sock, struct zbx_json_parse
 			ret = FAIL;
 			goto out;
 		}
+	}
+
+	if (SUCCEED != (ret = zbx_json_brackets_by_name(jp, ZBX_PROTO_TAG_DATA, &jp_data)))
+	{
+		if (SUCCEED == (ret = zbx_json_brackets_by_name(jp, ZBX_PROTO_TAG_HISTORY_DATA, &jp_data)))
+		{
+			process_agent_data_history_data(sock, &jp_data, ts, token, validator_args, &processed_num,
+					&total_num);
+			goto out;
+		}
+
+		*info = zbx_strdup(*info, zbx_json_strerror());
+		goto out;
 	}
 
 	items = (DC_ITEM *)zbx_malloc(NULL, sizeof(DC_ITEM) * ZBX_HISTORY_VALUES_MAX);

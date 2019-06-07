@@ -30,4 +30,7 @@ extern int	CONFIG_TIMEOUT;
 int	send_list_of_active_checks(zbx_socket_t *sock, char *request);
 int	send_list_of_active_checks_json(zbx_socket_t *sock, struct zbx_json_parse *json);
 
+int	zbx_send_agent_configuration(zbx_socket_t *sock, struct zbx_json_parse *jp);
+int	zbx_get_agent_data(zbx_socket_t *sock, struct zbx_json_parse *jp);
+
 #endif
