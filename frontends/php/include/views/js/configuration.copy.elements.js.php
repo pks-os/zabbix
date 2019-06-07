@@ -45,11 +45,10 @@
 					break;
 			}
 
-			$('#copy_targets').html($multiselect);
+			$('#copy_targets').replaceWith($multiselect);
 
 			$multiselect.multiSelectHelper(helper_options);
-
-			$('div.multiselect-control').unwrap();
+			$multiselect.closest('.multiselect-control').attr('id', 'copy_targets');
 		}
 
 		$('#copy_type').on('change', changeTargetType);
