@@ -152,15 +152,13 @@ $triggersFormList
 			->setId('tags_div')
 	)
 	->addRow(
-		(new CVisibilityBox('visible[manual_close]', 'manual_close_div', _('Original')))
+		(new CVisibilityBox('visible[manual_close]', 'manual_close', _('Original')))
 			->setLabel(_('Allow manual close'))
 			->setChecked(isset($data['visible']['manual_close'])),
-		(new CDiv(
-			(new CRadioButtonList('manual_close', (int) $data['manual_close']))
-				->addValue(_('No'), ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
-				->addValue(_('Yes'), ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
-				->setModern(true)
-		))->setId('manual_close_div')
+		(new CRadioButtonList('manual_close', (int) $data['manual_close']))
+			->addValue(_('No'), ZBX_TRIGGER_MANUAL_CLOSE_NOT_ALLOWED)
+			->addValue(_('Yes'), ZBX_TRIGGER_MANUAL_CLOSE_ALLOWED)
+			->setModern(true)
 	);
 
 $triggersTab = new CTabView();
