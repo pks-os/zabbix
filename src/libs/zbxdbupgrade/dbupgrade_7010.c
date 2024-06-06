@@ -1,4 +1,3 @@
-<?php
 /*
 ** Copyright (C) 2001-2024 Zabbix SIA
 **
@@ -13,24 +12,27 @@
 ** If not, see <https://www.gnu.org/licenses/>.
 **/
 
+#include "dbupgrade.h"
 
-require_once dirname(__FILE__).'/../include/CAPITest.php';
+#include "zbxdbhigh.h"
 
-class testAPIInfo extends CAPITest {
-	public function testAPIInfo_VersionWithAuth() {
-		$error = [
-			'code' => -32602,
-			'message' => 'Invalid params.',
-			'data' => 'The "apiinfo.version" method must be called without authorization header.'
-		];
+/*
+ * 7.2 development database patches
+ */
 
-		$this->call('apiinfo.version', [], $error);
-	}
+#ifndef HAVE_SQLITE3
 
-	public function testAPIInfo_VersionWithoutAuth() {
-		$this->disableAuthorization();
-		$result = $this->call('apiinfo.version', []);
+/*static int	DBpatch_7010000(void)
+{
+	*** first upgrade patch ***
+}*/
 
-		$this->assertSame('7.2.0', $result['result']);
-	}
-}
+#endif
+
+DBPATCH_START(7010)
+
+/* version, duplicates flag, mandatory flag */
+
+/*DBPATCH_ADD(7010000, 0, 1)*/
+
+DBPATCH_END()
