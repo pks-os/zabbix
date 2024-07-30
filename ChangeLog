@@ -148,10 +148,22 @@ A......... [ZBX-24299] fixed possibility to alter readonly error fields with Hos
 ........S. [ZBX-23690] optimized maintenance calculations for large number of hosts x maintenances (wiper)
 
 --------------------------------------------------------------------------------
+Changes for 7.0.3rc1
+
+New features:
+
+Bug fixes:
+
+--------------------------------------------------------------------------------
+Changes for 7.0.2
+
+7.0.2rc2 was released as 7.0.2 without any changes
+
+--------------------------------------------------------------------------------
 Changes for 7.0.2rc2
 
 Bug fixes:
-.......PS. [ZBX-24658] fixed host proxy mapping update on proxies with forced full configuration sync (wiper)
+.......PS. [ZBX-24658] fixed host-proxy mapping update on proxies with forced full configuration sync (wiper)
 A......... [ZBX-24683] fixed validation rules in event.get() and problem.get() methods (Sasha)
 ........S. [ZBX-24915] fixed housekeeper delete parameter (askolmeisters)
 
