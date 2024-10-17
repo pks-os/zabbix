@@ -11,18 +11,11 @@
 ** You should have received a copy of the GNU Affero General Public License along with this program.
 ** If not, see <https://www.gnu.org/licenses/>.
 **/
+#ifndef ZBX_VARIANT_COMMON
+#define ZBX_VARIANT_COMMON
 
-package com.zabbix.gateway;
+#include "zbxmockdata.h"
 
-class GeneralInformation
-{
-	static final String APPLICATION_NAME = "Zabbix Java Gateway";
-	static final String REVISION_DATE = "15 October 2024";
-	static final String REVISION = "{ZABBIX_REVISION}";
-	static final String VERSION = "7.2.0alpha2";
+void	mock_read_variant(const char *path, zbx_variant_t *variant);
 
-	static void printVersion()
-	{
-		System.out.println(String.format("%s v%s (revision %s) (%s)", APPLICATION_NAME, VERSION, REVISION, REVISION_DATE));
-	}
-}
+#endif
