@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -41,15 +41,21 @@ void	zbx_db_init_autoincrement_options(void)
  ******************************************************************************/
 int	zbx_db_connect(int flag)
 {
+	int		ret;
+	zbx_dbconn_t	*db;
+
 	if (NULL != dbconn)
 		THIS_SHOULD_NEVER_HAPPEN;
 
-	dbconn = zbx_dbconn_create();
+	db = zbx_dbconn_create();
 
-	zbx_dbconn_set_connect_options(dbconn, flag);
-	zbx_dbconn_set_autoincrement(dbconn, db_autoincrement);
+	(void)zbx_dbconn_set_connect_options(db, flag);
+	zbx_dbconn_set_autoincrement(db, db_autoincrement);
+	ret = zbx_dbconn_open(db);
 
-	return zbx_dbconn_open(dbconn);
+	dbconn = db;
+
+	return ret;
 }
 
 /******************************************************************************
@@ -645,4 +651,83 @@ int	zbx_db_execute_multiple_query(const char *query, const char *field_name, zbx
 	}
 
 	return zbx_dbconn_execute_multiple_query(dbconn, query, field_name, ids);
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Purpose: prepare large SQL query with uint based IDs                       *
+ *                                                                            *
+ * Parameters: query      - [IN] large query object                           *
+ *             sql        - [IN/OUT] first part of the query, can be modified *
+ *                              or reallocated                                *
+ *             sql_alloc  - [IN/OUT] size of allocated sql string             *
+ *             sql_offset - [IN/OUT] length of the sql string                 *
+ *             field      - [IN] ID field name                                *
+ *             ids        - [IN] vector of IDs                                *
+ *                                                                            *
+ * Comments: Large query object 'borrows' the sql buffer with the query part, *
+ *           meaning:                                                         *
+ *             - caller must not free/modify this sql buffer while the        *
+ *               prepared large query object is being used                    *
+ *             - caller must free this sql buffer afterwards - it's not freed *
+ *               when large query object is cleared.                          *
+ *                                                                            *
+ ******************************************************************************/
+void	zbx_db_large_query_prepare_uint(zbx_db_large_query_t *query, char **sql, size_t *sql_alloc,
+		size_t *sql_offset, const char *field, const zbx_vector_uint64_t *ids)
+{
+	if (NULL == dbconn)
+	{
+		memset(query, 0, sizeof(zbx_db_large_query_t));
+		THIS_SHOULD_NEVER_HAPPEN;
+		return;
+	}
+
+	zbx_dbconn_large_query_prepare_uint(query, dbconn, sql, sql_alloc, sql_offset, field, ids);
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Purpose: prepare large SQL query with string based IDs                     *
+ *                                                                            *
+ * Parameters: query      - [IN] large query object                           *
+ *             sql        - [IN/OUT] first part of the query, can be modified *
+ *                              or reallocated                                *
+ *             sql_alloc  - [IN/OUT] size of allocated sql string             *
+ *             sql_offset - [IN/OUT] length of the sql string                 *
+ *             field      - [IN] ID field name                                *
+ *             ids        - [IN] vector of IDs                                *
+ *                                                                            *
+ * Comments: Large query object 'borrows' the sql buffer with the query part, *
+ *           meaning:                                                         *
+ *             - caller must not free/modify this sql buffer while the        *
+ *               prepared large query object is being used                    *
+ *             - caller must free this sql buffer afterwards - it's not freed *
+ *               when large query object is cleared.                          *
+ *                                                                            *
+ ******************************************************************************/
+void	zbx_db_large_query_prepare_str(zbx_db_large_query_t *query, char **sql, size_t *sql_alloc,
+		size_t *sql_offset, const char *field, const zbx_vector_str_t *ids)
+{
+	if (NULL == dbconn)
+	{
+		memset(query, 0, sizeof(zbx_db_large_query_t));
+		THIS_SHOULD_NEVER_HAPPEN;
+		return;
+	}
+
+	zbx_dbconn_large_query_prepare_str(query, dbconn, sql, sql_alloc, sql_offset, field, ids);
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Purpose: set sql statement to be appended to each batch                    *
+ *                                                                            *
+ * Parameters: query      - [IN] large query object                           *
+ *             sql        - [IN] sql statement to append                      *
+ *                                                                            *
+ ******************************************************************************/
+void	zbx_db_large_query_append_sql(zbx_db_large_query_t *query, const char *sql)
+{
+	zbx_dbconn_large_query_append_sql(query, sql);
 }

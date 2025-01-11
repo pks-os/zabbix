@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -21,16 +21,16 @@ class testUrlParameters extends CLegacyWebTest {
 	public static function data() {
 		return [
 			[
-				'title' => 'Configuration of host group',
+				'title' => 'Host group edit',
 				'check_server_name' => true,
 				'server_name_on_page' => false,
 				'test_cases' => [
 					[
-						'url' => 'zabbix.php?action=hostgroup.edit&groupid=4',
+						'url' => 'zabbix.php?action=popup&popup=hostgroup.edit&groupid=4',
 						'text_present' => 'Host groups'
 					],
 					[
-						'url' => 'zabbix.php?action=hostgroup.edit&groupid=9999999',
+						'url' => 'zabbix.php?action=popup&popup=hostgroup.edit&groupid=9999999',
 						'text_not_present' => 'Host groups',
 						'access_denied' => true,
 						'text_present' => [
@@ -124,16 +124,16 @@ class testUrlParameters extends CLegacyWebTest {
 				]
 			],
 			[
-				'title' => 'Configuration of template group',
+				'title' => 'Template group edit',
 				'check_server_name' => true,
 				'server_name_on_page' => false,
 				'test_cases' => [
 					[
-						'url' => 'zabbix.php?action=templategroup.edit&groupid=1',
+						'url' => 'zabbix.php?action=popup&popup=templategroup.edit&groupid=1',
 						'text_present' => 'Template groups'
 					],
 					[
-						'url' => 'zabbix.php?action=templategroup.edit&groupid=9999999',
+						'url' => 'zabbix.php?action=popup&popup=templategroup.edit&groupid=9999999',
 						'text_not_present' => 'Template groups',
 						'access_denied' => true,
 						'text_present' => [
@@ -183,16 +183,16 @@ class testUrlParameters extends CLegacyWebTest {
 				]
 			],
 			[
-				'title' => 'Configuration of host',
+				'title' => 'Host edit',
 				'check_server_name' => true,
 				'server_name_on_page' => false,
 				'test_cases' => [
 					[
-						'url' => 'zabbix.php?action=host.edit&hostid=10084',
+						'url' => 'zabbix.php?action=popup&popup=host.edit&hostid=10084',
 						'text_present' => 'Host'
 					],
 					[
-						'url' => 'zabbix.php?action=host.edit&hostid=9999999',
+						'url' => 'zabbix.php?action=popup&popup=host.edit&hostid=9999999',
 						'text_not_present' => 'Host',
 						'access_denied' => true,
 						'text_present' => [

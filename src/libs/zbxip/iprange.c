@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -651,7 +651,7 @@ int	zbx_portrange_uniq_next(const zbx_range_t *ranges, const int num, int *port)
  *                                                                            *
  * Purpose: gets next unique port value from specified range                  *
  *                                                                            *
- * Parameters: ranges - [IN] array of port ranges                             *
+ * Parameters: ranges - [IN] array of port ranges (allowed values 1-65534)    *
  *             num    - [IN] size of port ranges array                        *
  *             idx    - [IN/OUT] index of range in array                      *
  *             port   - [IN/OUT] port with current value from port range      *

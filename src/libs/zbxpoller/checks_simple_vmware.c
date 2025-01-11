@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -394,6 +394,9 @@ static int	vmware_service_get_counter_value_by_id(const zbx_vmware_service_t *se
 		case ZBX_VMWARE_UNIT_MEGABYTES:
 		case ZBX_VMWARE_UNIT_MEGABYTESPERSECOND:
 			SET_UI64_RESULT(result, perfvalue->value * ZBX_MEBIBYTE);
+			break;
+		case ZBX_VMWARE_UNIT_GIGABYTES:
+			SET_UI64_RESULT(result, perfvalue->value * ZBX_GIBIBYTE);
 			break;
 		case ZBX_VMWARE_UNIT_TERABYTES:
 			SET_UI64_RESULT(result, perfvalue->value * ZBX_TEBIBYTE);

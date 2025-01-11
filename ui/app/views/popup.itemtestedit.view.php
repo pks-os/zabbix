@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -443,7 +443,7 @@ $form->addItem([
 			(new CDiv('#{result}'))
 				->addClass(ZBX_STYLE_LINK_ACTION)
 				->addClass(ZBX_STYLE_OVERFLOW_ELLIPSIS)
-				->setHint('#{result}', 'hintbox-wrap'),
+				->setHint('#{result_hint}', 'hintbox-wrap'),
 			makeWarningIcon('#{warning}')
 		]))
 			->addStyle('max-width: '.ZBX_TEXTAREA_STANDARD_WIDTH.'px;')

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -57,9 +57,16 @@ if ($data['linked_templates']) {
 
 	foreach ($data['linked_templates'] as $template) {
 		if (array_key_exists($template['templateid'], $data['writable_templates'])) {
-			$template_link = (new CLink($template['name']))
-				->addClass('js-edit-linked-template')
-				->setAttribute('data-templateid', $template['templateid']);
+			$template_url = (new CUrl('zabbix.php'))
+				->setArgument('action', 'popup')
+				->setArgument('popup', 'template.edit')
+				->setArgument('templateid', $template['templateid'])
+				->getUrl();
+
+			$template_link = (new CLink($template['name'], $template_url))
+				->setAttribute('data-templateid', $template['templateid'])
+				->setAttribute('data-action', 'template.edit')
+				->addClass('js-edit-template');
 		}
 		else {
 			$template_link = new CSpan($template['name']);
@@ -342,7 +349,8 @@ $output = [
 	'doc_url' => CDocHelper::getUrl(CDocHelper::DATA_COLLECTION_TEMPLATES_EDIT),
 	'body' => $form->toString(),
 	'buttons' => $buttons,
-	'script_inline' => getPagePostJs().$this->readJsFile('template.edit.js.php')
+	'script_inline' => getPagePostJs().$this->readJsFile('template.edit.js.php'),
+	'dialogue_class' => 'modal-popup-large'
 ];
 
 if ($data['user']['debug_mode'] == GROUP_DEBUG_MODE_ENABLED) {

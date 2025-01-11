@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1263,6 +1263,9 @@ out:
 
 	zbx_dc_close_user_macros(um_handle);
 
+#ifdef	HAVE_MALLOC_TRIM
+	malloc_trim(128 * ZBX_MEBIBYTE);
+#endif
 	zabbix_log(LOG_LEVEL_DEBUG, "End of %s()", __func__);
 
 	return ret;

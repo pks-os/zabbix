@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -101,8 +101,8 @@ ZBX_DC_FUNCTION;
 
 typedef struct
 {
-	zbx_vector_uint64_pair_t	dep_itemids;
-	zbx_uint64_t			revision;
+	zbx_hashset_t	dep_itemids;
+	zbx_uint64_t	revision;
 }
 ZBX_DC_MASTERITEM;
 
@@ -268,6 +268,16 @@ ZBX_DC_ITEMVALUETYPE;
 
 typedef struct
 {
+	zbx_uint64_t	itemtagid;
+	const char	*tag;
+	const char	*value;
+}
+zbx_dc_item_tag_t;
+
+ZBX_VECTOR_DECL(dc_item_tag, zbx_dc_item_tag_t)
+
+typedef struct
+{
 	zbx_uint64_t		itemid;
 	zbx_uint64_t		hostid;
 	zbx_uint64_t		interfaceid;
@@ -287,7 +297,7 @@ typedef struct
 	zbx_uint64_t		templateid;
 	ZBX_DC_PREPROCITEM	*preproc_item;
 	ZBX_DC_MASTERITEM	*master_item;
-	zbx_vector_ptr_t	tags;
+	zbx_vector_dc_item_tag_t	tags;
 	int			nextcheck;
 	int			mtime;
 	int			data_expected_from;
@@ -304,6 +314,12 @@ typedef struct
 	unsigned char		update_triggers;
 }
 ZBX_DC_ITEM;
+
+typedef struct
+{
+	ZBX_DC_ITEM	*item;
+}
+ZBX_DC_ITEM_REF;
 
 typedef struct
 {
@@ -407,7 +423,7 @@ typedef struct
 						/* 'config->interfaces' hashset */
 
 	zbx_vector_dc_httptest_ptr_t	httptests;
-	zbx_vector_dc_item_ptr_t	items;
+	zbx_hashset_t			items;
 }
 ZBX_DC_HOST;
 
@@ -687,14 +703,6 @@ typedef struct
 }
 zbx_dc_trigger_tag_t;
 
-typedef struct
-{
-	zbx_uint64_t	itemtagid;
-	zbx_uint64_t	itemid;
-	const char	*tag;
-	const char	*value;
-}
-zbx_dc_item_tag_t;
 
 typedef struct
 {
@@ -1006,7 +1014,6 @@ typedef struct
 	zbx_hashset_t		actions;
 	zbx_hashset_t		action_conditions;
 	zbx_hashset_t		trigger_tags;
-	zbx_hashset_t		item_tags;
 	zbx_hashset_t		host_tags;
 	zbx_hashset_t		host_tags_index;	/* host tag index by hostid */
 	zbx_hashset_t		correlations;

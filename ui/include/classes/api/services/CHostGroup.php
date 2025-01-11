@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -71,9 +71,7 @@ class CHostGroup extends CApiService {
 			'graphids' =>							['type' => API_IDS, 'flags' => API_ALLOW_NULL | API_NORMALIZE, 'default' => null],
 			'triggerids' =>							['type' => API_IDS, 'flags' => API_ALLOW_NULL | API_NORMALIZE, 'default' => null],
 			'maintenanceids' =>						['type' => API_IDS, 'flags' => API_ALLOW_NULL | API_NORMALIZE, 'default' => null],
-			'monitored_hosts' =>					['type' => API_BOOLEAN, 'flags' => API_DEPRECATED, 'replacement' => 'with_monitored_hosts'],
 			'with_monitored_hosts' =>				['type' => API_BOOLEAN, 'default' => false],
-			'real_hosts' =>							['type' => API_BOOLEAN, 'flags' => API_DEPRECATED, 'replacement' => 'with_hosts'],
 			'with_hosts' =>							['type' => API_BOOLEAN, 'default' => false],
 			'with_items' =>							['type' => API_BOOLEAN, 'default' => false],
 			'with_item_prototypes' =>				['type' => API_BOOLEAN, 'default' => false],

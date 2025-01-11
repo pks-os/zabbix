@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1263,7 +1263,7 @@ class testFormServicesServices extends CWebTest {
 		$table = $this->query('class:list-table')->asTable()->one()->waitUntilReady();
 		$table->findRow('Name', $parent, true)->query('link', $parent)->waitUntilClickable()->one()->click();
 		$this->page->waitUntilReady();
-		$table->findRow('Name', $child, true)->query("xpath:.//button[".CXPathHelper::fromClass('js-edit-service')."]")
+		$table->findRow('Name', $child, true)->query("xpath:.//button[".CXPathHelper::fromClass('js-edit-service-list')."]")
 				->one()->waitUntilClickable()->click();
 
 		$form = COverlayDialogElement::find()->asForm()->one()->waitUntilReady();

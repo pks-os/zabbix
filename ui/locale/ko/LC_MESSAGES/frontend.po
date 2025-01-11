@@ -672,6 +672,10 @@ msgid "Action disabled"
 msgid_plural "Actions disabled"
 msgstr[0] "액션을 비활성화 하였습니다"
 
+#: app/controllers/CControllerPopup.php:42
+msgid "Action edit"
+msgstr ""
+
 #: app/controllers/CControllerActionEnable.php:84
 msgid "Action enabled"
 msgid_plural "Actions enabled"
@@ -1261,6 +1265,11 @@ msgstr "그리드에 정렬하기"
 #: widgets/problems/includes/WidgetForm.php:131
 msgid "All"
 msgstr "모두"
+
+#: app/views/mediatype.list.php:79 app/views/mediatype.list.php:81
+#: app/views/mediatype.list.php:90 app/views/popup.operation.edit.php:160
+msgid "All available"
+msgstr ""
 
 #: app/views/monitoring.dashboard.view.php:189
 msgid "All dashboards"
@@ -4968,6 +4977,10 @@ msgid "Connector disabled"
 msgid_plural "Connectors disabled"
 msgstr[0] ""
 
+#: app/controllers/CControllerPopup.php:43
+msgid "Connector edit"
+msgstr ""
+
 #: app/controllers/CControllerConnectorEnable.php:69
 msgid "Connector enabled"
 msgid_plural "Connectors enabled"
@@ -5121,6 +5134,10 @@ msgstr[0] ""
 #: app/views/popup.token.view.php:51
 msgid "Copy to clipboard"
 msgstr "클립 보드에 복사"
+
+#: app/controllers/CControllerPopup.php:44
+msgid "Correlation edit"
+msgstr ""
 
 #: app/controllers/CControllerPopupTriggerExpr.php:52
 #: app/controllers/CControllerPopupTriggerExpr.php:693
@@ -7055,6 +7072,10 @@ msgid "Discovery rule disabled"
 msgid_plural "Discovery rules disabled"
 msgstr[0] "디스커버리 규칙을 비활성화 하였습니다."
 
+#: app/controllers/CControllerPopup.php:45
+msgid "Discovery rule edit"
+msgstr ""
+
 # Japanese check (Discovery tool?)
 #: app/controllers/CControllerDiscoveryEnable.php:68 host_discovery.php:580
 msgid "Discovery rule enabled"
@@ -7100,9 +7121,17 @@ msgstr "표시"
 msgid "Display OK triggers for"
 msgstr "복구트리거 표시기간"
 
+#: app/views/mediatype.list.php:75
+msgid "Display actions"
+msgstr ""
+
 #: app/partials/monitoring.latest.view.html.php:309
 msgid "Display graph"
 msgstr "그래프 표시"
+
+#: widgets/tophosts/views/column.edit.php:136
+msgid "Display item value as"
+msgstr ""
 
 #: widgets/itemhistory/views/column.edit.php:241
 msgid "Display local time"
@@ -7123,6 +7152,10 @@ msgstr "장애의 표시"
 #: app/partials/monitoring.latest.view.html.php:308
 msgid "Display stacked graph"
 msgstr "누계 그래프 표시"
+
+#: widgets/topitems/views/column.edit.php:90
+msgid "Display value as"
+msgstr ""
 
 #: app/controllers/CControllerHintboxActionlist.php:99
 #: app/views/administration.queue.details.php:86
@@ -8425,6 +8458,10 @@ msgstr "면"
 msgid "Filter"
 msgstr "필터"
 
+#: app/views/mediatype.list.php:76
+msgid "Filter actions by the scope of media type usage:"
+msgstr ""
+
 #: app/views/js/popup.tabfilter.edit.js.php:63
 msgid "Filter deleted"
 msgstr "필터 삭제됨"
@@ -9378,6 +9415,10 @@ msgstr "호스트 가용성"
 msgid "Host cannot have more than one default interface of the same type."
 msgstr "호스트에 같은 타입의 기본 인터페이스는 2개 이상 설정할 수 없습니다."
 
+#: widgets/hostcard/Widget.php:32
+msgid "Host card"
+msgstr ""
+
 #: app/views/administration.proxy.list.php:91 hostinventoriesoverview.php:85
 #: widgets/tophosts/includes/WidgetForm.php:159
 msgid "Host count"
@@ -9398,6 +9439,10 @@ msgstr[0] "호스트를 삭제하였습니다"
 msgid "Host disabled"
 msgid_plural "Hosts disabled"
 msgstr[0] "호스트를 비활성화 하였습니다"
+
+#: app/controllers/CControllerPopup.php:46
+msgid "Host edit"
+msgstr ""
 
 #: app/controllers/CControllerHostGroupEnable.php:76
 #: app/controllers/CControllerPopupMassupdateHost.php:491
@@ -9455,6 +9500,10 @@ msgstr "호스트 그룹이 추가됨"
 msgid "Host group deleted"
 msgid_plural "Host groups deleted"
 msgstr[0] "호스트 그룹이 삭제됨"
+
+#: app/controllers/CControllerPopup.php:47
+msgid "Host group edit"
+msgstr ""
 
 #: include/views/js/monitoring.sysmaps.js.php:112
 msgid "Host group elements"
@@ -9587,6 +9636,12 @@ msgstr "호스트 네비게이터"
 #: include/hosts.inc.php:284
 msgid "Host networks"
 msgstr "호스트 네트워크"
+
+#: widgets/topitems/includes/WidgetForm.php:116
+#: widgets/topitems/includes/WidgetForm.php:128
+#: widgets/topitems/views/widget.edit.php:63
+msgid "Host ordering"
+msgstr ""
 
 #: widgets/hostnavigator/includes/WidgetForm.php:65
 msgid "Host patterns"
@@ -11668,6 +11723,12 @@ msgstr "호스트\"%1$s\"의 인벤토리를 비활성 하였습니다."
 msgid "Inventory field"
 msgstr "인벤토리 항목"
 
+#: include/classes/html/widgets/fields/CWidgetFieldMultiSelectHostInventoryView.php:30
+#: include/classes/widgets/fields/CWidgetFieldMultiSelectHostInventory.php:48
+#: widgets/hostcard/includes/WidgetForm.php:50
+msgid "Inventory fields"
+msgstr ""
+
 #: app/views/popup.massupdate.host.php:175
 #: app/views/popup.operation.edit.php:402
 msgid "Inventory mode"
@@ -11742,6 +11803,10 @@ msgid "Item disabled"
 msgid_plural "Items disabled"
 msgstr[0] "아이템을 비활성화 하였습니다"
 
+#: app/controllers/CControllerPopup.php:48
+msgid "Item edit"
+msgstr ""
+
 #: items.php:707
 msgid "Item enabled"
 msgid_plural "Items enabled"
@@ -11776,6 +11841,12 @@ msgstr "항목 네비게이터"
 msgid "Item not selected"
 msgstr "아이템이 선택되어 있지 않습니다"
 
+#: widgets/topitems/includes/WidgetForm.php:145
+#: widgets/topitems/includes/WidgetForm.php:157
+#: widgets/topitems/views/widget.edit.php:81
+msgid "Item ordering"
+msgstr ""
+
 #: widgets/piechart/views/widget.edit.js.php:203
 #: widgets/svggraph/views/widget.edit.js.php:281
 msgid "Item pattern"
@@ -11806,6 +11877,10 @@ msgstr "아이템 프로토타입을 추가하였습니다"
 msgid "Item prototype deleted"
 msgid_plural "Item prototypes deleted"
 msgstr[0] "아이템 프로토타입을 삭제하였습니다"
+
+#: app/controllers/CControllerPopup.php:49
+msgid "Item prototype edit"
+msgstr ""
 
 #: app/controllers/CControllerPopupMassupdateItem.php:286
 #: disc_prototypes.php:457 disc_prototypes.php:483 disc_prototypes.php:522
@@ -12314,6 +12389,15 @@ msgstr "길이"
 msgid "Licensed under"
 msgstr "라이센스 제공"
 
+#: widgets/topitems/includes/WidgetForm.php:125
+#: widgets/topitems/includes/WidgetForm.php:154
+msgid "Limit"
+msgstr ""
+
+#: widgets/topitems/views/widget.edit.php:95
+msgid "Limit applies to each \"Item pattern\" separately"
+msgstr ""
+
 #: app/views/administration.gui.edit.php:93
 msgid "Limit for search and filter results"
 msgstr "검색/필터 항목의 상한치"
@@ -12339,6 +12423,11 @@ msgstr "선 타입"
 #: include/views/js/monitoring.sysmaps.js.php:598
 msgid "Line width"
 msgstr "선 폭"
+
+#: widgets/svggraph/includes/WidgetForm.php:301
+#: widgets/svggraph/includes/WidgetForm.php:333
+msgid "Linear"
+msgstr ""
 
 #: app/views/popup.massupdate.host.php:42 app/views/template.massupdate.php:45
 #: include/views/monitoring.sysmap.constructor.php:43
@@ -12549,6 +12638,11 @@ msgstr "로그 시간 형식"
 msgid "Log unmatched SNMP traps"
 msgstr "매치하지 않은 SNMP트랩을 로그에 기록"
 
+#: widgets/svggraph/includes/WidgetForm.php:302
+#: widgets/svggraph/includes/WidgetForm.php:334
+msgid "Logarithmic"
+msgstr ""
+
 #: app/controllers/CControllerAuditLogList.php:201
 #: app/views/administration.user.list.php:135
 #: app/views/popup.ldap.test.edit.php:33 app/views/system.warning.php:43
@@ -12708,6 +12802,10 @@ msgstr "메인터넌스"
 #, c-format
 msgid "Maintenance \"%1$s\" already exists."
 msgstr "메인터넌스\"%1$s\"는 이미 존재합니다."
+
+#: app/controllers/CControllerPopup.php:50
+msgid "Maintenance edit"
+msgstr ""
 
 #: app/controllers/CControllerMaintenanceTimePeriodEdit.php:142
 #: app/views/maintenance.edit.php:238
@@ -13133,6 +13231,11 @@ msgstr "미디어 타입"
 msgid "Media type \"%1$s\" already exists."
 msgstr "미디어 타입 \"%1$s\"는 이미 존재합니다."
 
+#: include/classes/api/services/CMediatype.php:878
+#, c-format
+msgid "Media type \"%1$s\" is used by action \"%2$s\"."
+msgstr ""
+
 #: app/controllers/CControllerMediatypeCreate.php:187
 msgid "Media type added"
 msgstr "연락 방법을 추가하였습니다"
@@ -13150,6 +13253,10 @@ msgstr[0] "미디어 타입을 비활성화 하였습니다"
 #: app/views/administration.user.edit.php:359
 msgid "Media type disabled by Administration."
 msgstr "관리에서 비활성화된 미디어 유형입니다."
+
+#: app/controllers/CControllerPopup.php:51
+msgid "Media type edit"
+msgstr ""
 
 #: app/controllers/CControllerMediatypeEnable.php:87
 #: app/controllers/CControllerMediatypeEnable.php:94
@@ -13491,6 +13598,10 @@ msgstr[0] "삭제된 모듈: %1$s."
 msgid "Module disabled"
 msgid_plural "Modules disabled"
 msgstr[0] ""
+
+#: app/controllers/CControllerPopup.php:52
+msgid "Module edit"
+msgstr ""
 
 #: app/controllers/CControllerModuleEnable.php:91
 msgid "Module enabled"
@@ -14925,6 +15036,10 @@ msgstr "inode의 수 혹은 퍼센트. 수치라면 integer를 리턴하고 퍼�
 msgid "Numeral systems"
 msgstr "수치변환"
 
+#: widgets/tophosts/views/column.edit.php:139
+msgid "Numeric"
+msgstr ""
+
 #: app/partials/configuration.filter.items.php:143
 #: app/views/popup.massupdate.item.php:148 include/items.inc.php:125
 #: include/triggers.inc.php:1214 include/views/configuration.item.edit.php:123
@@ -15865,6 +15980,10 @@ msgstr "링크 없이 붙여넣기"
 msgid "Pattern"
 msgstr "패턴"
 
+#: widgets/topitems/includes/CWidgetFieldColumnsListView.php:58
+msgid "Patterns"
+msgstr ""
+
 #: app/views/popup.action.edit.php:238
 msgid "Pause operations for suppressed problems"
 msgstr "잠시 억제된 문제의 실행을 일시중지"
@@ -16523,6 +16642,10 @@ msgid "Proxy deleted"
 msgid_plural "Proxies deleted"
 msgstr[0] "프록시를 삭제하였습니다"
 
+#: app/controllers/CControllerPopup.php:53
+msgid "Proxy edit"
+msgstr ""
+
 #: app/controllers/CControllerAuditLogList.php:239
 #: app/partials/configuration.host.edit.html.php:266
 #: app/views/configuration.host.list.php:153
@@ -16555,6 +16678,10 @@ msgstr "프록시 그룹이 추가됨"
 msgid "Proxy group deleted"
 msgid_plural "Proxy groups deleted"
 msgstr[0] ""
+
+#: app/controllers/CControllerPopup.php:54
+msgid "Proxy group edit"
+msgstr ""
 
 #: app/controllers/CControllerProxyGroupUpdate.php:74
 msgid "Proxy group updated"
@@ -17661,6 +17788,10 @@ msgid "SLA disabled"
 msgid_plural "SLAs disabled"
 msgstr[0] ""
 
+#: app/controllers/CControllerPopup.php:58
+msgid "SLA edit"
+msgstr ""
+
 #: app/controllers/CControllerSlaEnable.php:73
 msgid "SLA enabled"
 msgid_plural "SLAs enabled"
@@ -18095,6 +18226,10 @@ msgstr[0] "스크립트를 삭제하였습니다"
 msgid "Script does not have parameters."
 msgstr "스크립트에 매개변수가 없습니다."
 
+#: app/controllers/CControllerPopup.php:56
+msgid "Script edit"
+msgstr ""
+
 #: app/views/administration.timeouts.edit.php:168
 msgid "Script execution"
 msgstr "스크립트 실행"
@@ -18307,6 +18442,10 @@ msgstr "수신처"
 msgid "Send to back"
 msgstr "맨 뒤로 보내기"
 
+#: app/views/popup.operation.edit.php:189
+msgid "Send to media type"
+msgstr ""
+
 #: app/views/popup.operation.edit.php:108
 msgid "Send to user groups"
 msgstr "사용자 그룹에 보내기"
@@ -18422,6 +18561,10 @@ msgstr "서비스 데이터 보존 기간"
 msgid "Service deleted"
 msgid_plural "Services deleted"
 msgstr[0] "서비스를 삭제하였습니다"
+
+#: app/controllers/CControllerPopup.php:57
+msgid "Service edit"
+msgstr ""
 
 #: app/views/administration.userrole.edit.php:166
 #: app/views/administration.userrole.edit.php:207
@@ -19059,6 +19202,17 @@ msgstr "섹터 간 공간"
 #: include/locales.inc.php:62
 msgid "Spanish (es_ES)"
 msgstr "스페인어 (es_ES)"
+
+#: widgets/item/includes/WidgetForm.php:191
+#: widgets/item/includes/WidgetForm.php:321
+#: widgets/tophosts/views/column.edit.php:155
+#: widgets/tophosts/views/column.edit.php:162
+msgid "Sparkline"
+msgstr ""
+
+#: app/views/mediatype.list.php:83 app/views/mediatype.list.php:91
+msgid "Specific"
+msgstr ""
 
 #: include/classes/helpers/CRoleHelper.php:199
 msgid "Specified role was not found."
@@ -19806,6 +19960,10 @@ msgid "Template deleted"
 msgid_plural "Templates deleted"
 msgstr[0] "템플릿을 삭제하였습니다"
 
+#: app/controllers/CControllerPopup.php:59
+msgid "Template edit"
+msgstr ""
+
 #: app/controllers/CControllerAuditLogList.php:259
 #: app/partials/configuration.templategroup.edit.html.php:52
 #: app/views/configuration.templategroup.edit.php:52
@@ -19827,6 +19985,10 @@ msgstr "템플릿 그룹이 추가됨"
 msgid "Template group deleted"
 msgid_plural "Template groups deleted"
 msgstr[0] "템플릿 그룹이 삭제됨"
+
+#: app/controllers/CControllerPopup.php:55
+msgid "Template group edit"
+msgstr ""
 
 #: app/controllers/CControllerTemplateGroupUpdate.php:86
 msgid "Template group updated"
@@ -20491,6 +20653,10 @@ msgstr "오늘"
 msgid "Today so far"
 msgstr "오늘의 지금까지"
 
+#: app/controllers/CControllerPopup.php:60
+msgid "Token edit"
+msgstr ""
+
 #: include/views/js/monitoring.sysmaps.js.php:40
 #: include/views/js/monitoring.sysmaps.js.php:159
 #: include/views/js/monitoring.sysmaps.js.php:684
@@ -20519,6 +20685,10 @@ msgstr "상위 N"
 #: widgets/tophosts/Widget.php:34
 msgid "Top hosts"
 msgstr "상위 호스트"
+
+#: widgets/topitems/Widget.php:32
+msgid "Top items"
+msgstr ""
 
 #: widgets/toptriggers/Widget.php:29
 msgid "Top triggers"
@@ -20745,6 +20915,10 @@ msgstr[0] "트리거를 비활성화 하였습니다"
 msgid "Trigger displaying options"
 msgstr "트리거 표시 옵션"
 
+#: app/controllers/CControllerPopup.php:61
+msgid "Trigger edit"
+msgstr ""
+
 #: app/controllers/CControllerTriggerEnable.php:67
 msgid "Trigger enabled"
 msgid_plural "Triggers enabled"
@@ -20881,6 +21055,10 @@ msgstr "트리거 프로토타입을 추가하였습니다"
 msgid "Trigger prototype deleted"
 msgid_plural "Trigger prototypes deleted"
 msgstr[0] "트리거 프로토타입을 삭제하였습니다"
+
+#: app/controllers/CControllerPopup.php:62
+msgid "Trigger prototype edit"
+msgstr ""
 
 #: app/controllers/CControllerTriggerMassupdate.php:219
 #: app/controllers/CControllerTriggerPrototypeDisable.php:76
@@ -24340,6 +24518,18 @@ msgstr "디렉토리는 비워둘 수 없음"
 msgid "discovery rule \"%1$s\" on host \"%2$s\" is not monitored"
 msgstr "\"%2$s\" 호스트의 검색 규칙 \"%1$s\"이(가) 모니터링되지 않습니다."
 
+#: app/views/mediatype.list.php:78
+msgid "display all actions"
+msgstr ""
+
+#: app/views/mediatype.list.php:80
+msgid "display only actions where All available media types are used in action operation"
+msgstr ""
+
+#: app/views/mediatype.list.php:84
+msgid "display only actions where specific media type is used in action operation"
+msgstr ""
+
 #: app/views/popup.lldoperation.php:65 include/actions.inc.php:27
 #: include/classes/helpers/CCorrelationHelper.php:37
 #: include/views/js/configuration.host.discovery.edit.overr.js.php:164
@@ -24699,6 +24889,10 @@ msgstr "호스트그룹명이 올바르지 않습니다"
 msgid "invalid host name"
 msgstr "호스트의 이름이 올바르지 않습니다"
 
+#: include/classes/widgets/fields/CWidgetFieldMultiSelectHostInventory.php:48
+msgid "invalid inventory field"
+msgstr ""
+
 #: include/classes/validators/CHistFunctionValidator.php:82
 #: include/classes/validators/CMathFunctionValidator.php:86
 #, c-format
@@ -25021,6 +25215,11 @@ msgstr "monodec() - 항목 값이 지속적으로 감소하는지 확인(1 - 데
 #: app/controllers/CControllerPopupTriggerExpr.php:858
 msgid "monoinc() - Check for continuous item value increase (1 - data is monotonic, 0 - otherwise), Mode (strict - require strict monotonicity)"
 msgstr "monoinc() - 항목 값이 지속적으로 증가하는지 확인(1 - 데이터가 단조, 0 - 그렇지 않은 경우), 모드(엄격 - 엄격한 단조 필요)"
+
+#: widgets/hostcard/views/widget.view.php:157
+#: widgets/hostcard/views/widget.view.php:338
+msgid "more"
+msgstr ""
 
 #: include/func.inc.php:571
 msgctxt "millisecond short"

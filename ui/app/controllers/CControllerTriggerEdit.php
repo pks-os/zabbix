@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -79,7 +79,8 @@ class CControllerTriggerEdit extends CController {
 				'selectDiscoveryRule' => ['itemid', 'name', 'templateid'],
 				'selectTriggerDiscovery' => ['parent_triggerid', 'disable_source'],
 				'selectDependencies' => ['triggerid'],
-				'selectTags' => ['tag', 'value']
+				'selectTags' => ['tag', 'value'],
+				'editable' => true
 			];
 
 			if ($this->hasInput('show_inherited_tags') && $this->getInput('show_inherited_tags')) {

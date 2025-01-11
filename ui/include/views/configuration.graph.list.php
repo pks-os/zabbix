@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -182,9 +182,15 @@ foreach ($data['graphs'] as $graph) {
 				$hosts[] = ', ';
 			}
 
-			$host_link = (new CLink($host['name']))
-				->setAttribute('data-hostid', $host['hostid'])
-				->addClass('js-edit-'.$data['context']);
+			$host_url = (new CUrl('zabbix.php'))
+				->setArgument('action', 'popup')
+				->setArgument('popup', $data['context'] === 'host' ? 'host.edit' : 'template.edit')
+				->setArgument($data['context'] === 'host' ? 'hostid' : 'templateid', $host['hostid'])
+				->getUrl();
+
+			$host_link = (new CLink($host['name'], $host_url))
+				->setAttribute($data['context'] === 'host' ? 'data-hostid' : 'data-templateid', $host['hostid'])
+				->setAttribute('data-action', $data['context'] === 'host' ? 'host.edit' : 'template.edit');
 
 			if ($data['context'] ==='host') {
 				$hosts[] = in_array($host['hostid'], $data['editable_hosts']) ? $host_link : $host['name'];

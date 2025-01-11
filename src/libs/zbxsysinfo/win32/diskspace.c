@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -80,10 +80,20 @@ static int	get_fs_size_stat(const char *fs, zbx_uint64_t *total, zbx_uint64_t *n
 
 	*total = totalBytes.QuadPart;
 	*not_used = freeBytes.QuadPart;
-	*used = totalBytes.QuadPart - freeBytes.QuadPart;
-	*pfree = (double)(__int64)freeBytes.QuadPart * 100. / (double)(__int64)totalBytes.QuadPart;
-	*pused = (double)((__int64)totalBytes.QuadPart - (__int64)freeBytes.QuadPart) * 100. /
-			(double)(__int64)totalBytes.QuadPart;
+
+	if (0 != totalBytes.QuadPart)
+	{
+		*used = totalBytes.QuadPart - freeBytes.QuadPart;
+		*pfree = (double)(__int64)freeBytes.QuadPart * 100. / (double)(__int64)totalBytes.QuadPart;
+		*pused = (double)((__int64)totalBytes.QuadPart - (__int64)freeBytes.QuadPart) * 100. /
+				(double)(__int64)totalBytes.QuadPart;
+	}
+	else
+	{
+		*used = 0;
+		*pfree = 0;
+		*pused = 0;
+	}
 
 	return SYSINFO_RET_OK;
 

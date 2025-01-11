@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -59,7 +59,8 @@ class testWidgets extends CWebTest {
 		switch ($widget) {
 			case 'Top hosts':
 			case 'Item history':
-				$widget_form->getFieldContainer('Columns')->query('button:Add')->one()->waitUntilClickable()->click();
+				$container = ($widget === 'Top hosts') ? 'Columns' : 'Items';
+				$widget_form->getFieldContainer($container)->query('button:Add')->one()->waitUntilClickable()->click();
 				$column_dialog = COverlayDialogElement::find()->all()->last()->waitUntilReady();
 				$select_dialog = $column_dialog;
 				break;
@@ -309,5 +310,23 @@ class testWidgets extends CWebTest {
 		}
 
 		return $db_values;
+	}
+
+	/**
+	 * Assert range input attributes.
+	 *
+	 * @param CFormElement $form               parent form
+	 * @param string       $field              id or label of the range input
+	 * @param array        $expected_values    the attribute values expected
+	 */
+	public function assertRangeSliderParameters($form, $field, $expected_values) {
+		$path = (COverlayDialogElement::find()->one()->asForm()->getField('Type')->getText() == 'Pie chart')
+			? 'xpath:.//'
+			: 'xpath://div/';
+		$range = $form->getField($field)->query($path.'input[@type="range"]')->one();
+
+		foreach ($expected_values as $attribute => $expected_value) {
+			$this->assertEquals($expected_value, $range->getAttribute($attribute));
+		}
 	}
 }

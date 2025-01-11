@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -608,6 +608,9 @@ wchar_t	*zbx_oemcp_to_unicode(const char *oemcp_string);
 char	**zbx_setproctitle_init(int argc, char **argv);
 void	zbx_setproctitle(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
 void	zbx_setproctitle_deinit(void);
+#if !defined(_WINDOWS) && !defined(__MINGW32__)
+void	zbx_unsetenv(const char *envname);
+#endif
 
 void	zbx_error(const char *fmt, ...) __zbx_attr_format_printf(1, 2);
 

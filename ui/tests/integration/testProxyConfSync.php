@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -956,7 +956,7 @@ class testProxyConfSync extends CIntegrationTest
 		$diff_keys = array_diff_key($expected_objects, $got);
 
 		$this->assertEmpty($diff_keys,
-			'following objects are missing from sync log:\n'.var_export(array_keys($diff_keys)));
+			'following objects are missing from sync log:\n'.var_export(array_keys($diff_keys), true));
 
 		$diff_objects = [];
 

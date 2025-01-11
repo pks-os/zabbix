@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1494,6 +1494,7 @@ class testPageProblems extends CWebTest {
 		}
 
 		$form->submit();
+		$table->waitUntilReloaded();
 
 		if (array_key_exists('time_selector', $data)) {
 			$this->query('xpath://a[contains(@class, "zi-clock")]')->waitUntilClickable()->one()->click();
@@ -1509,10 +1510,11 @@ class testPageProblems extends CWebTest {
 			}
 
 			$this->query('button:Apply')->one()->click();
+			$this->page->waitUntilReady();
+			$table->waitUntilReloaded();
 		}
 
 		$this->page->waitUntilReady();
-		$table->waitUntilReloaded();
 		$this->assertTableData($data['result']);
 
 		// Check "Compact view" and "Highlight whole row" filter checkboxes.

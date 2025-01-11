@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -20,7 +20,8 @@
 #define ZBX_RES_CONF_FILE "/etc/resolv.conf"
 
 #ifdef HAVE_LIBEVENT
-#include <event.h>
+#include <event2/dns.h>
+#include <event2/event.h>
 
 typedef enum
 {

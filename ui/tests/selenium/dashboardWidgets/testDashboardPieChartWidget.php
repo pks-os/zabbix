@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1340,21 +1340,6 @@ class testDashboardPieChartWidget extends testWidgets {
 			$hint = $this->query('xpath://div[@class="overlay-dialogue wordbreak"]')->asOverlayDialog()->waitUntilPresent()->one();
 			$this->assertEquals($text, $hint->getText());
 			$hint->query('xpath:./button')->one()->click();
-		}
-	}
-
-	/**
-	 * Asserts range input attributes.
-	 *
-	 * @param CFormElement $form               parent form
-	 * @param string       $label              label of the range input
-	 * @param array        $expected_values    the attribute values expected
-	 */
-	protected function assertRangeSliderParameters($form, $label, $expected_values) {
-		$range = $form->getField($label)->query('xpath:.//input[@type="range"]')->one();
-
-		foreach ($expected_values as $attribute => $expected_value) {
-			$this->assertEquals($expected_value, $range->getAttribute($attribute));
 		}
 	}
 

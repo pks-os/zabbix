@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -77,7 +77,6 @@ class CUserGroup extends CApiService {
 			'editable'					=> false,
 			'output'					=> API_OUTPUT_EXTEND,
 			'selectUsers'				=> null,
-			'selectRights'				=> null,
 			'selectHostGroupRights'		=> null,
 			'selectTemplateGroupRights'	=> null,
 			'selectTagFilters'			=> null,
@@ -89,8 +88,6 @@ class CUserGroup extends CApiService {
 		];
 
 		$options = zbx_array_merge($defOptions, $options);
-
-		$this->checkDeprecatedParam($options, 'selectRights');
 
 		// permissions
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
@@ -240,10 +237,6 @@ class CUserGroup extends CApiService {
 											['if' => ['field' => 'mfa_status', 'in' => implode(',', [GROUP_MFA_ENABLED])], 'type' => API_ID],
 											['else' => true, 'type' => API_ID, 'in' => '0']
 			]],
-			'rights' =>					['type' => API_OBJECTS, 'flags' => API_NORMALIZE | API_DEPRECATED, 'replacement' => 'hostgroup_rights', 'uniq' => [['id']], 'fields' => [
-				'id' =>						['type' => API_ID, 'flags' => API_REQUIRED],
-				'permission' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [PERM_DENY, PERM_READ, PERM_READ_WRITE])]
-			]],
 			'hostgroup_rights' =>		['type' => API_OBJECTS, 'flags' => API_NORMALIZE, 'uniq' => [['id']], 'fields' => [
 				'id' =>						['type' => API_ID, 'flags' => API_REQUIRED],
 				'permission' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [PERM_DENY, PERM_READ, PERM_READ_WRITE])]
@@ -257,7 +250,6 @@ class CUserGroup extends CApiService {
 				'tag' =>					['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('tag_filter', 'tag'), 'default' => DB::getDefault('tag_filter', 'tag')],
 				'value' =>					['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('tag_filter', 'value'), 'default' => DB::getDefault('tag_filter', 'value')]
 			]],
-			'userids' =>				['type' => API_IDS, 'flags' => API_NORMALIZE | API_DEPRECATED, 'uniq' => true],
 			'users' =>					['type' => API_OBJECTS, 'flags' => API_NORMALIZE, 'uniq' => [['userid']], 'fields' => [
 				'userid' =>					['type' => API_ID, 'flags' => API_REQUIRED]
 			]]
@@ -265,18 +257,6 @@ class CUserGroup extends CApiService {
 		if (!CApiInputValidator::validate($api_input_rules, $usrgrps, '/', $error)) {
 			self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 		}
-
-		foreach ($usrgrps as &$usrgrp) {
-			if (array_key_exists('userids', $usrgrp)) {
-				if (array_key_exists('users', $usrgrp)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Parameter "%1$s" is deprecated.', 'userids'));
-				}
-
-				$usrgrp['users'] = zbx_toObject($usrgrp['userids'], 'userid');
-				unset($usrgrp['userids']);
-			}
-		}
-		unset($usrgrp);
 
 		$this->checkDuplicates(array_column($usrgrps, 'name'));
 		$this->checkUsers($usrgrps);
@@ -358,10 +338,6 @@ class CUserGroup extends CApiService {
 											['if' => ['field' => 'mfa_status', 'in' => implode(',', [GROUP_MFA_ENABLED])], 'type' => API_ID],
 											['else' => true, 'type' => API_ID, 'in' => '0']
 			]],
-			'rights' =>					['type' => API_OBJECTS, 'flags' => API_NORMALIZE | API_DEPRECATED, 'replacement' => 'hostgroup_rights', 'uniq' => [['id']], 'fields' => [
-				'id' =>						['type' => API_ID, 'flags' => API_REQUIRED],
-				'permission' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [PERM_DENY, PERM_READ, PERM_READ_WRITE])]
-			]],
 			'hostgroup_rights' =>		['type' => API_OBJECTS, 'flags' => API_NORMALIZE, 'uniq' => [['id']], 'fields' => [
 				'id' =>						['type' => API_ID, 'flags' => API_REQUIRED],
 				'permission' =>				['type' => API_INT32, 'flags' => API_REQUIRED, 'in' => implode(',', [PERM_DENY, PERM_READ, PERM_READ_WRITE])]
@@ -375,7 +351,6 @@ class CUserGroup extends CApiService {
 				'tag' =>					['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('tag_filter', 'tag'), 'default' => DB::getDefault('tag_filter', 'tag')],
 				'value' =>					['type' => API_STRING_UTF8, 'length' => DB::getFieldLength('tag_filter', 'value'), 'default' => DB::getDefault('tag_filter', 'value')]
 			]],
-			'userids' =>				['type' => API_IDS, 'flags' => API_NORMALIZE | API_DEPRECATED, 'uniq' => true],
 			'users' =>					['type' => API_OBJECTS, 'flags' => API_NORMALIZE, 'uniq' => [['userid']], 'fields' => [
 				'userid' =>					['type' => API_ID, 'flags' => API_REQUIRED]
 			]]
@@ -386,15 +361,6 @@ class CUserGroup extends CApiService {
 		}
 
 		foreach ($usrgrps as &$usrgrp) {
-			if (array_key_exists('userids', $usrgrp)) {
-				if (array_key_exists('users', $usrgrp)) {
-					self::exception(ZBX_API_ERROR_PARAMETERS, _s('Parameter "%1$s" is deprecated.', 'userids'));
-				}
-
-				$usrgrp['users'] = zbx_toObject($usrgrp['userids'], 'userid');
-				unset($usrgrp['userids']);
-			}
-
 			$db_usrgrp = $db_usrgrps[$usrgrp['usrgrpid']];
 
 			if (array_key_exists('name', $usrgrp) && $usrgrp['name'] !== $db_usrgrp['name']) {
@@ -1295,6 +1261,7 @@ class CUserGroup extends CApiService {
 		}
 
 		self::checkProvisionedUsersExist($db_usrgrps);
+		self::checkUsedInProvisionGroupMapping($db_usrgrps);
 	}
 
 	private static function checkProvisionedUsersExist(array $db_user_groups): void {
@@ -1314,6 +1281,34 @@ class CUserGroup extends CApiService {
 				)
 			);
 		}
+	}
+
+	private static function checkUsedInProvisionGroupMapping(array $db_usrgrps): void {
+		$row = DBfetch(DBselect(
+			'SELECT ud.name,ud.idp_type,udug.usrgrpid'.
+			' FROM userdirectory_usrgrp udug'.
+			' JOIN userdirectory_idpgroup udig ON udug.userdirectory_idpgroupid=udig.userdirectory_idpgroupid'.
+			' JOIN userdirectory ud ON udig.userdirectoryid=ud.userdirectoryid'.
+			' WHERE '.dbConditionId('udug.usrgrpid', array_keys($db_usrgrps)),
+			1
+		));
+
+		if (!$row) {
+			return;
+		}
+
+		if ($row['idp_type'] == IDP_TYPE_SAML) {
+			$error = _s('Cannot delete user group "%1$s", because it is used by SAML userdirectory.',
+				$db_usrgrps[$row['usrgrpid']]['name']
+			);
+		}
+		else {
+			$error = _s('Cannot delete user group "%1$s", because it is used by LDAP userdirectory "%2$s".',
+				$db_usrgrps[$row['usrgrpid']]['name'], $row['name']
+			);
+		}
+
+		self::exception(ZBX_API_ERROR_PARAMETERS, $error);
 	}
 
 	private static function unlinkUsers(array $db_groups): void {
@@ -1355,9 +1350,8 @@ class CUserGroup extends CApiService {
 			$result = $relationMap->mapMany($result, $dbUsers, 'users');
 		}
 
-		self::addRelatedRights($options, $result, 'selectRights');
-		self::addRelatedRights($options, $result, 'selectHostGroupRights');
-		self::addRelatedRights($options, $result, 'selectTemplateGroupRights');
+		self::addRelatedHostGroupRights($options, $result);
+		self::addRelatedTemplateGroupRights($options, $result);
 
 		// Adding usergroup tag filters.
 		if ($options['selectTagFilters'] !== null && $options['selectTagFilters'] != API_OUTPUT_COUNT) {
@@ -1398,61 +1392,25 @@ class CUserGroup extends CApiService {
 		return $result;
 	}
 
-	/**
-	 * Adds related host or template groups rights requested by "select*" options to the resulting object set.
-	 *
-	 * @param array  $options [IN] Original input options.
-	 * @param array  $result  [IN/OUT] Result output.
-	 * @param string $option  [IN] Possible values:
-	 *                               - "selectGroups" (deprecated);
-	 *                               - "selectHostGroups";
-	 *                               - "selectTemplateGroups".
-	 */
-	private static function addRelatedRights(array $options, array &$result, string $option): void {
-		if ($options[$option] === null || $options[$option] === API_OUTPUT_COUNT) {
+	private static function addRelatedHostGroupRights(array $options, array &$result): void {
+		if ($options['selectHostGroupRights'] === null || $options['selectHostGroupRights'] === API_OUTPUT_COUNT) {
 			return;
 		}
 
-		switch ($option) {
-			case 'selectRights':
-				$output_tag = 'rights';
-				$types = [HOST_GROUP_TYPE_HOST_GROUP];
-				break;
-
-			case 'selectHostGroupRights':
-				$output_tag = 'hostgroup_rights';
-				$types = [HOST_GROUP_TYPE_HOST_GROUP];
-				break;
-
-			case 'selectTemplateGroupRights':
-				$output_tag = 'templategroup_rights';
-				$types = [HOST_GROUP_TYPE_TEMPLATE_GROUP];
-				break;
-		}
-
 		foreach ($result as &$row) {
-			$row[$output_tag] = [];
+			$row['hostgroup_rights'] = [];
 		}
 		unset($row);
 
-		if (is_array($options[$option])) {
-			$output_fields = ['groupid'];
-
-			foreach ($options[$option] as $field) {
-				if (in_array($field, ['id', 'permission'])) {
-					$output_fields[] = $field;
-				}
-			}
-		}
-		else {
-			$output_fields = ['groupid', 'id', 'permission'];
-		}
-
+		$output_fields = is_array($options['selectHostGroupRights'])
+			? array_merge(['groupid'], array_intersect($options['selectHostGroupRights'], ['id', 'permission']))
+			: ['groupid', 'id', 'permission'];
 		$sql = 'SELECT r.'.implode(',r.', $output_fields).
-			' FROM rights r,hstgrp hg'.
-			' WHERE r.id=hg.groupid'.
-				' AND '.dbConditionInt('hg.type', $types).
+			' FROM rights r'.
+			' JOIN hstgrp hg ON r.id=hg.groupid'.
+			' WHERE '.dbConditionInt('hg.type', [HOST_GROUP_TYPE_HOST_GROUP]).
 				' AND '.dbConditionId('r.groupid', array_keys($result));
+
 		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
 			$sql .= ' AND '.dbConditionId('r.permission', [PERM_READ_WRITE, PERM_READ]);
 		}
@@ -1460,7 +1418,38 @@ class CUserGroup extends CApiService {
 		$db_rights = DBselect($sql);
 
 		while ($db_right = DBfetch($db_rights)) {
-			$result[$db_right['groupid']][$output_tag][] = array_diff_key($db_right, array_flip(['groupid']));
+			$result[$db_right['groupid']]['hostgroup_rights'][] = array_diff_key($db_right, ['groupid' => true]);
+		}
+	}
+
+	private static function addRelatedTemplateGroupRights(array $options, array &$result): void {
+		if ($options['selectTemplateGroupRights'] === null
+				|| $options['selectTemplateGroupRights'] === API_OUTPUT_COUNT) {
+			return;
+		}
+
+		foreach ($result as &$row) {
+			$row['templategroup_rights'] = [];
+		}
+		unset($row);
+
+		$output_fields = is_array($options['selectTemplateGroupRights'])
+			? array_merge(['groupid'], array_intersect($options['selectTemplateGroupRights'], ['id', 'permission']))
+			: ['groupid', 'id', 'permission'];
+		$sql = 'SELECT r.'.implode(',r.', $output_fields).
+			' FROM rights r'.
+			' JOIN hstgrp hg ON r.id=hg.groupid'.
+			' WHERE '.dbConditionInt('hg.type', [HOST_GROUP_TYPE_TEMPLATE_GROUP]).
+				' AND '.dbConditionId('r.groupid', array_keys($result));
+
+		if (self::$userData['type'] != USER_TYPE_SUPER_ADMIN) {
+			$sql .= ' AND '.dbConditionId('r.permission', [PERM_READ_WRITE, PERM_READ]);
+		}
+
+		$db_rights = DBselect($sql);
+
+		while ($db_right = DBfetch($db_rights)) {
+			$result[$db_right['groupid']]['templategroup_rights'][] = array_diff_key($db_right, ['groupid' => true]);
 		}
 	}
 

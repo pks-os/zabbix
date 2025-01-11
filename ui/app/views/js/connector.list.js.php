@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -23,91 +23,75 @@
 	const view = new class {
 
 		init() {
-			this._initActions();
+			this.#initActions();
 		}
 
-		_initActions() {
-			document.querySelector('.js-create-connector').addEventListener('click', () => this._edit());
+		#initActions() {
+			document.querySelector('.js-create-connector').addEventListener('click', () => {
+				window.popupManagerInstance.openPopup('connector.edit', {})
+			});
 
 			const form = document.getElementById('connector-list');
 
 			form.addEventListener('click', (e) => {
-				if (e.target.classList.contains('js-edit-connector')) {
-					this._edit({connectorid: e.target.dataset.connectorid});
-				}
-				else if (e.target.classList.contains('js-enable-connector')) {
-					this._enable(e.target, [e.target.dataset.connectorid]);
+				if (e.target.classList.contains('js-enable-connector')) {
+					this.#enable(e.target, [e.target.dataset.connectorid]);
 				}
 				else if (e.target.classList.contains('js-disable-connector')) {
-					this._disable(e.target, [e.target.dataset.connectorid]);
+					this.#disable(e.target, [e.target.dataset.connectorid]);
 				}
 			});
 
 			form.querySelector('.js-massenable-connector').addEventListener('click', (e) => {
-				this._enable(e.target, Object.keys(chkbxRange.getSelectedIds()));
+				this.#enable(e.target, Object.keys(chkbxRange.getSelectedIds()), true);
 			});
 
 			form.querySelector('.js-massdisable-connector').addEventListener('click', (e) => {
-				this._disable(e.target, Object.keys(chkbxRange.getSelectedIds()));
+				this.#disable(e.target, Object.keys(chkbxRange.getSelectedIds()), true);
 			});
 
 			form.querySelector('.js-massdelete-connector').addEventListener('click', (e) => {
-				this._delete(e.target, Object.keys(chkbxRange.getSelectedIds()));
+				this.#delete(e.target, Object.keys(chkbxRange.getSelectedIds()));
 			});
+
+			this.#setSubmitCallback();
 		}
 
-		_edit(parameters = {}) {
-			const overlay = PopUp('connector.edit', parameters, {
-				dialogueid: 'connector_edit',
-				dialogue_class: 'modal-popup-static',
-				prevent_navigation: true
-			});
+		#enable(target, connectorids, massenable = false) {
+			if (massenable) {
+				const confirmation = connectorids.length > 1
+					? <?= json_encode(_('Enable selected connectors?')) ?>
+					: <?= json_encode(_('Enable selected connector?')) ?>;
 
-			const dialogue = overlay.$dialogue[0];
-
-			dialogue.addEventListener('dialogue.submit', (e) => {
-				uncheckTableRows('connector');
-				postMessageOk(e.detail.title);
-
-				if ('messages' in e.detail) {
-					postMessageDetails('success', e.detail.messages);
+				if (!window.confirm(confirmation)) {
+					return;
 				}
-
-				location.href = location.href;
-			});
-		}
-
-		_enable(target, connectorids) {
-			const confirmation = connectorids.length > 1
-				? <?= json_encode(_('Enable selected connectors?')) ?>
-				: <?= json_encode(_('Enable selected connector?')) ?>;
-
-			if (!window.confirm(confirmation)) {
-				return;
 			}
 
 			const curl = new Curl('zabbix.php');
 			curl.setArgument('action', 'connector.enable');
 
-			this._post(target, connectorids, curl);
+			this.#post(target, connectorids, curl);
 		}
 
-		_disable(target, connectorids) {
-			const confirmation = connectorids.length > 1
-				? <?= json_encode(_('Disable selected connectors?')) ?>
-				: <?= json_encode(_('Disable selected connector?')) ?>;
+		#disable(target, connectorids, massdisable = false) {
+			if (massdisable) {
+				const confirmation = connectorids.length > 1
+					? <?= json_encode(_('Disable selected connectors?')) ?>
+					: <?= json_encode(_('Disable selected connector?')) ?>;
 
-			if (!window.confirm(confirmation)) {
-				return;
+				if (!window.confirm(confirmation)) {
+					return;
+				}
 			}
 
 			const curl = new Curl('zabbix.php');
 			curl.setArgument('action', 'connector.disable');
 
-			this._post(target, connectorids, curl);
+			this.#post(target, connectorids, curl);
 		}
 
-		_delete(target, connectorids) {
+		#delete(target, connectorids) {
 			const confirmation = connectorids.length > 1
 				? <?= json_encode(_('Delete selected connectors?')) ?>
 				: <?= json_encode(_('Delete selected connector?')) ?>;
@@ -119,10 +103,10 @@
 			const curl = new Curl('zabbix.php');
 			curl.setArgument('action', 'connector.delete');
 
-			this._post(target, connectorids, curl);
+			this.#post(target, connectorids, curl);
 		}
 
-		_post(target, connectorids, url) {
+		#post(target, connectorids, url) {
 			url.setArgument(CSRF_TOKEN_NAME, <?= json_encode(CCsrfTokenHelper::get('connector')) ?>);
 
 			target.classList.add('is-loading');
@@ -165,6 +149,21 @@
 				.finally(() => {
 					target.classList.remove('is-loading');
 				});
+		}
+
+		#setSubmitCallback() {
+			window.popupManagerInstance.setSubmitCallback((e) => {
+				if ('success' in e.detail) {
+					postMessageOk(e.detail.success.title);
+
+					if ('messages' in e.detail.success) {
+						postMessageDetails('success', e.detail.success.messages);
+					}
+				}
+
+				uncheckTableRows('connector');
+				location.href = location.href;
+			});
 		}
 	};
 </script>

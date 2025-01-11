@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -150,6 +150,7 @@ else {
 					]))
 						->addClass('has-broadcast-data')
 						->setAttribute('data-itemid', $item_value['itemid'])
+						->setAttribute('data-key_', $item_value['key_'])
 						->setAttribute('data-clock', $clock.'.'.$item_value['ns'])
 				);
 		}
@@ -208,6 +209,7 @@ function makeValueCell(array $column, array $item_value, bool $text_wordbreak = 
 					(new CCol($bar_gauge))
 						->addClass($cell_class)
 						->setAttribute('data-itemid', $item_value['itemid'])
+						->setAttribute('data-key_', $item_value['key_'])
 						->setAttribute('data-clock', $item_value['clock'].'.'.$item_value['ns']),
 					(new CCol(
 						(new CSpan($item_value['formatted_value']))->setHint(
@@ -216,6 +218,7 @@ function makeValueCell(array $column, array $item_value, bool $text_wordbreak = 
 					))
 						->addClass($cell_class)
 						->setAttribute('data-itemid', $item_value['itemid'])
+						->setAttribute('data-key_', $item_value['key_'])
 						->setAttribute('data-clock', $item_value['clock'].'.'.$item_value['ns'])
 						->addStyle('width: 0;')
 						->addClass(ZBX_STYLE_NOWRAP)
@@ -244,6 +247,7 @@ function makeValueCell(array $column, array $item_value, bool $text_wordbreak = 
 					))
 						->addClass($cell_class)
 						->setAttribute('data-itemid', $item_value['itemid'])
+						->setAttribute('data-key_', $item_value['key_'])
 						->setAttribute('data-clock', $item_value['clock'].'.'.$item_value['ns'])
 						->setAttribute('bgcolor', $color !== '' ? '#'.$color : null)
 						->setColSpan(2)
@@ -303,6 +307,7 @@ function makeValueCell(array $column, array $item_value, bool $text_wordbreak = 
 					->addClass($column['monospace_font'] ? ZBX_STYLE_MONOSPACE_FONT : null)
 					->addClass($cell_class)
 					->setAttribute('data-itemid', $item_value['itemid'])
+					->setAttribute('data-key_', $item_value['key_'])
 					->setAttribute('data-clock', $item_value['clock'].'.'.$item_value['ns'])
 					->setAttribute('bgcolor', $color !== '' ? '#'.$color : null)
 					->setColSpan(2)
@@ -319,6 +324,7 @@ function makeValueCell(array $column, array $item_value, bool $text_wordbreak = 
 					->addClass($cell_class)
 					->setAttribute('bgcolor', $color !== '' ? '#'.$color : null)
 					->setAttribute('data-itemid', $item_value['itemid'])
+					->setAttribute('data-key_', $item_value['key_'])
 					->setAttribute('data-clock', $item_value['clock'].'.'.$item_value['ns'])
 					->setColSpan(2)
 			];

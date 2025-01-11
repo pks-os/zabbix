@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -70,6 +70,7 @@ $available_js = [
 	// classes
 	'component.z-bar-gauge.js' => '',
 	'component.z-select.js' => '',
+	'component.z-sparkline.js' => '',
 	'class.event-hub.js' => '',
 	'class.base-component.js' => '',
 	'class.calendar.js' => '',
@@ -113,6 +114,7 @@ $available_js = [
 	'class.navigationtree.js' => '',
 	'init.js' => '',
 	'class.tab-indicators.js' => '',
+	'class.popupmanager.js' => '',
 	// templates
 	'sysmap.tpl.js' => 'templates/',
 	// page-specific scripts
@@ -478,6 +480,7 @@ if (empty($_GET['files'])) {
 		'common.js',
 		'component.z-bar-gauge.js',
 		'component.z-select.js',
+		'component.z-sparkline.js',
 		'class.event-hub.js',
 		'class.base-component.js',
 		'class.cdebug.js',
@@ -508,7 +511,8 @@ if (empty($_GET['files'])) {
 		'hostinterfacemanager.js',
 		'hostmacrosmanager.js',
 		'textareaflexible.js',
-		'init.js'
+		'init.js',
+		'class.popupmanager.js'
 	];
 
 	if (CCookieHelper::has(ZBX_SESSION_NAME)) {

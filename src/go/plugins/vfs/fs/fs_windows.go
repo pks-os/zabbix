@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -133,8 +133,11 @@ func getFsStats(path string) (stats *FsStats, err error) {
 		Total: total,
 		Free:  totalFree,
 		Used:  totalUsed,
-		PFree: float64(totalFree) / float64(total) * 100,
-		PUsed: float64(totalUsed) / float64(total) * 100,
+	}
+
+	if total != 0 {
+		stats.PFree = float64(totalFree) * 100 / float64(total)
+		stats.PUsed = float64(totalUsed) * 100 / float64(total)
 	}
 	return
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Copyright (C) 2001-2024 Zabbix SIA
+# Copyright (C) 2001-2025 Zabbix SIA
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of
 # the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -179,18 +179,6 @@ sub main
 		usage();
 	}
 
-	open(INFO, dirname($0)."/../src/data.tmpl");
-	my @lines = <INFO>;
-	close(INFO);
-
-	open(INFO, dirname($0)."/../src/templates.tmpl");
-	push(@lines, <INFO>);
-	close(INFO);
-
-	open(INFO, dirname($0)."/../src/dashboards.tmpl");
-	push(@lines, <INFO>);
-	close(INFO);
-
 	if ($ARGV[0] eq 'mysql')		{ %output = %mysql; }
 	elsif ($ARGV[0] eq 'postgresql')	{ %output = %postgresql; }
 	else					{ usage(); }
@@ -198,7 +186,7 @@ sub main
 	print $output{"before"};
 
 	my ($line, $type);
-	foreach $line (@lines)
+	foreach $line ( <STDIN> )
 	{
 		$line =~ tr/\t//d;
 		chop($line);

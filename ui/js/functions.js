@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -440,11 +440,12 @@ function overlayPreloaderDestroy(id) {
 /**
  * Function to close overlay dialogue and moves focus to IU element that was clicked to open it.
  *
- * @param string   dialogueid	Dialogue identifier to identify dialogue.
+ * @param string   dialogueid  Dialogue identifier to identify dialogue.
+ * @param boolean  close       Flag for dispatching close event.
  */
-function overlayDialogueDestroy(dialogueid) {
+function overlayDialogueDestroy(dialogueid, close = false) {
 	if (typeof dialogueid !== 'undefined') {
-		var overlay = overlays_stack.getById(dialogueid)
+		var overlay = overlays_stack.getById(dialogueid);
 		if (!overlay) {
 			return;
 		}
@@ -458,11 +459,13 @@ function overlayDialogueDestroy(dialogueid) {
 			overlay.unmount();
 		}
 
-		jQuery('[data-dialogueid='+dialogueid+']').remove();
+		jQuery('[data-dialogueid="'+dialogueid+'"]').remove();
 
 		removeFromOverlaysStack(dialogueid);
 
-		overlay.$dialogue[0].dispatchEvent(new CustomEvent('dialogue.close', {detail: {dialogueid}}));
+		if (close) {
+			overlay.$dialogue[0].dispatchEvent(new CustomEvent('dialogue.close', {detail: {dialogueid}}));
+		}
 	}
 }
 
@@ -928,4 +931,11 @@ function convertHSLToRGB(h, s, l) {
 	const f = (n, k = (n + h / 30) % 12) => l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
 
 	return [f(0), f(8), f(4)];
+}
+
+/**
+ * Check if given value is valid color hex code.
+ */
+function isColorHex(value) {
+	return /^#([0-9A-F]{6})$/i.test(value);
 }

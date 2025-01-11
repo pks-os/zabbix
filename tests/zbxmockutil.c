@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -290,6 +290,23 @@ zbx_uint64_t	zbx_mock_get_parameter_uint64(const char *path)
 	return parameter;
 }
 
+int	zbx_mock_get_parameter_int(const char *path)
+{
+	zbx_mock_error_t	err;
+	zbx_mock_handle_t	handle;
+	int		parameter;
+
+	if (ZBX_MOCK_SUCCESS != (err = zbx_mock_parameter(path, &handle)) ||
+			ZBX_MOCK_SUCCESS != (err = zbx_mock_int(handle, &parameter)))
+	{
+		fail_msg("Cannot read parameter at \"%s\": %s", path, zbx_mock_error_string(err));
+
+		return 0;
+	}
+
+	return parameter;
+}
+
 zbx_uint64_t	zbx_mock_get_object_member_uint64(zbx_mock_handle_t object, const char *name)
 {
 	zbx_mock_error_t	err;
@@ -418,4 +435,3 @@ int	zbx_mock_str_to_family(const char *str)
 	fail_msg("Unknown family \"%s\"", str);
 	return AF_UNSPEC;
 }
-

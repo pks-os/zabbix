@@ -72,6 +72,9 @@ $browser-sprite: '../img/browser-sprite.png?20220722';
 @import "components/toc";
 @import "components/z-bar-gauge";
 @import "components/z-select";
+@import "components/z-sparkline";
+
+@import "components/dashboard/widget-field-sparkline";
 
 @import "components/dashboard/widget-clock";
 @import "components/dashboard/widget-gauge";
@@ -79,6 +82,7 @@ $browser-sprite: '../img/browser-sprite.png?20220722';
 @import "components/dashboard/widget-honeycomb";
 @import "components/dashboard/widget-hostavail";
 @import "components/dashboard/widget-hostnavigator";
+@import "components/dashboard/widget-hostcard";
 @import "components/dashboard/widget-inaccessible";
 @import "components/dashboard/widget-item";
 @import "components/dashboard/widget-itemhistory";
@@ -91,6 +95,7 @@ $browser-sprite: '../img/browser-sprite.png?20220722';
 @import "components/dashboard/widget-problemsbysv";
 @import "components/dashboard/widget-svggraph";
 @import "components/dashboard/widget-tophosts";
+@import "components/dashboard/widget-topitems";
 @import "components/dashboard/widget-url";
 @import "components/dashboard/widget-web";
 
@@ -618,6 +623,10 @@ form {
 
 		button {
 			margin: 0;
+		}
+
+		.btn-icon {
+			margin-left: 5px;
 		}
 
 		table {

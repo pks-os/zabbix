@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1315,7 +1315,7 @@ class testLowLevelDiscovery extends CWebTest {
 					'fields' => [
 						'Name' => 'SSH agent LLD',
 						'Type' => 'SSH agent',
-						'Key' => 'ssh.run[<unique short description>,<ip>,<port>,<encoding>,<ssh options>]',
+						'Key' => 'ssh.run[<unique short description>,<ip>,<port>,<encoding>,<ssh options>,<subsystem>]',
 						'User name' => 'test_user',
 						'Executed script' => 'test_script'
 					],
@@ -2899,6 +2899,7 @@ class testLowLevelDiscovery extends CWebTest {
 			$operation_dialog_form->waitUntilNotVisible();
 			$override_dialog_form->submit();
 			$operation_dialog_form->waitUntilNotVisible();
+			COverlayDialogElement::ensureNotPresent();
 		}
 
 		$this->query('button:Cancel')->waitUntilClickable()->one()->click();

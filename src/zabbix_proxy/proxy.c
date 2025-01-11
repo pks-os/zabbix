@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1099,7 +1099,8 @@ static void	zbx_load_config(ZBX_TASK_EX *task)
 	/* initialize multistrings */
 	zbx_strarr_init(&config_load_module);
 
-	zbx_parse_cfg_file(config_file, cfg, ZBX_CFG_FILE_REQUIRED, ZBX_CFG_STRICT, ZBX_CFG_EXIT_FAILURE);
+	zbx_parse_cfg_file(config_file, cfg, ZBX_CFG_FILE_REQUIRED, ZBX_CFG_STRICT, ZBX_CFG_EXIT_FAILURE,
+			ZBX_CFG_ENVVAR_USE);
 
 	zbx_set_defaults();
 
@@ -1426,7 +1427,7 @@ static void	proxy_db_init(void)
 					zbx_db_config->dbname, zbx_strerror(errno));
 			exit(EXIT_FAILURE);
 		}
-		zbx_db_close();
+
 		proxy_db_init();
 
 		return;
@@ -1460,7 +1461,7 @@ int	MAIN_ZABBIX_ENTRY(int flags)
 								config_ssl_ca_location, config_ssl_cert_location,
 								config_ssl_key_location};
 	zbx_thread_args_t			thread_args;
-	zbx_thread_poller_args			poller_args = {&config_comms, get_zbx_program_type, get_zbx_progname,
+	zbx_thread_poller_args			poller_args = {&config_comms, get_zbx_program_type, zbx_progname,
 								ZBX_NO_POLLER, config_startup_time,
 								config_unavailable_delay, config_unreachable_period,
 								config_unreachable_delay,

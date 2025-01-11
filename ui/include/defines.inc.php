@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -13,11 +13,11 @@
 ** If not, see <https://www.gnu.org/licenses/>.
 **/
 
-define('ZABBIX_VERSION',		'7.2.0beta1');
-define('ZABBIX_API_VERSION',	'7.2.0');
-define('ZABBIX_EXPORT_VERSION',	'7.2');
+define('ZABBIX_VERSION',		'7.4.0alpha1');
+define('ZABBIX_API_VERSION',	'7.4.0');
+define('ZABBIX_EXPORT_VERSION',	'7.4');
 
-define('ZABBIX_DB_VERSION',		7010019);
+define('ZABBIX_DB_VERSION',		7020000);
 
 define('DB_VERSION_SUPPORTED',						0);
 define('DB_VERSION_LOWER_THAN_MINIMUM',				1);
@@ -29,7 +29,7 @@ define('DB_VERSION_HIGHER_THAN_MAXIMUM_ERROR',		6);
 define('DB_VERSION_HIGHER_THAN_MAXIMUM_WARNING',	7);
 
 define('ZABBIX_COPYRIGHT_FROM',	'2001');
-define('ZABBIX_COPYRIGHT_TO',	'2024');
+define('ZABBIX_COPYRIGHT_TO',	'2025');
 
 define('ZBX_DOCUMENTATION_URL', 'https://www.zabbix.com/documentation');
 
@@ -607,9 +607,6 @@ define('SNMP_V1', 1);
 define('SNMP_V2C', 2);
 define('SNMP_V3', 3);
 
-define('ZBX_DEPENDENT_ITEM_MAX_LEVELS',	3);
-define('ZBX_DEPENDENT_ITEM_MAX_COUNT',	29999);
-
 define('ITEM_VALUE_TYPE_FLOAT',		0);
 define('ITEM_VALUE_TYPE_STR',		1); // aka Character
 define('ITEM_VALUE_TYPE_LOG',		2);
@@ -631,7 +628,7 @@ define('ITEM_DATA_TYPE_BOOLEAN',		3);
 
 define('ZBX_DEFAULT_KEY_DB_MONITOR',			'db.odbc.select[<unique short description>,<dsn>,<connection string>]');
 define('ZBX_DEFAULT_KEY_DB_MONITOR_DISCOVERY',	'db.odbc.discovery[<unique short description>,<dsn>,<connection string>]');
-define('ZBX_DEFAULT_KEY_SSH',					'ssh.run[<unique short description>,<ip>,<port>,<encoding>,<ssh options>]');
+define('ZBX_DEFAULT_KEY_SSH',					'ssh.run[<unique short description>,<ip>,<port>,<encoding>,<ssh options>,<subsystem>]');
 define('ZBX_DEFAULT_KEY_TELNET',				'telnet.run[<unique short description>,<ip>,<port>,<encoding>]');
 
 define('ZBX_DEFAULT_JMX_ENDPOINT',	'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi');
@@ -879,6 +876,10 @@ define('ZBX_MEDIA_TYPE_TAGS_DISABLED',	0);
 define('ZBX_MEDIA_TYPE_TAGS_ENABLED',	1);
 define('ZBX_EVENT_MENU_HIDE',	0);
 define('ZBX_EVENT_MENU_SHOW',	1);
+// Media types used in actions filter.
+define('ZBX_MEDIA_TYPE_ACTIONS_ALL', -1);
+define('ZBX_MEDIA_TYPE_ACTIONS_AVAILABLE', 0);
+define('ZBX_MEDIA_TYPE_ACTIONS_SPECIFIC', 1);
 
 define('MEDIA_TYPE_EMAIL',		0);
 define('MEDIA_TYPE_EXEC',		1);
@@ -1310,6 +1311,9 @@ define('SVG_GRAPH_AXIS_ON',		1);
 
 define('SVG_GRAPH_AXIS_UNITS_AUTO',		0);
 define('SVG_GRAPH_AXIS_UNITS_STATIC',	1);
+
+define('SVG_GRAPH_AXIS_SCALE_LINEAR',		0);
+define('SVG_GRAPH_AXIS_SCALE_LOGARITHMIC',	1);
 
 define('SVG_GRAPH_MAX_NUMBER_OF_METRICS', 50);
 
@@ -2364,6 +2368,8 @@ define('ZBX_ICON_PENCIL', 'zi-pencil');
 define('ZBX_ICON_PLAY', 'zi-play');
 define('ZBX_ICON_PLUS', 'zi-plus');
 define('ZBX_ICON_PLUS_SMALL', 'zi-plus-small');
+define('ZBX_ICON_PROXY', 'zi-proxy');
+define('ZBX_ICON_PROXY_GROUP', 'zi-proxy-group');
 define('ZBX_ICON_REFERENCE', 'zi-reference');
 define('ZBX_ICON_REMOVE', 'zi-remove');
 define('ZBX_ICON_REMOVE_SMALL', 'zi-remove-small');
@@ -2371,6 +2377,7 @@ define('ZBX_ICON_REMOVE_SMALLER', 'zi-remove-smaller');
 define('ZBX_ICON_REPORTS', 'zi-reports');
 define('ZBX_ICON_SEARCH', 'zi-search');
 define('ZBX_ICON_SEARCH_LARGE', 'zi-search-large');
+define('ZBX_ICON_SERVER', 'zi-server');
 define('ZBX_ICON_SERVICES', 'zi-services');
 define('ZBX_ICON_SIGN_OUT', 'zi-sign-out');
 define('ZBX_ICON_SPEAKER', 'zi-speaker');

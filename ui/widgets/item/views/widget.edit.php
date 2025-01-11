@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -56,6 +56,9 @@ $form
 			)
 			->addFieldsGroup(
 				getChangeIndicatorFieldsGroupView($data['fields'])->addRowClass('fields-group-change-indicator')
+			)
+			->addItem(
+				(new CWidgetFieldSparklineView($data['fields']['sparkline']))->addRowClass('js-sparkline-row')
 			)
 			->addField(
 				new CWidgetFieldColorView($data['fields']['bg_color'])

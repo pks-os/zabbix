@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -455,6 +455,9 @@ class testFormGroups extends CWebTest {
 		if ($data['expected'] === TEST_BAD) {
 			$old_hash = CDBHelper::getHash(self::GROUPS_SQL);
 		}
+		$groupid = CDBHelper::getValue('SELECT groupid FROM hstgrp WHERE name='.zbx_dbstr($data['name']).
+				' AND type='.constant('HOST_GROUP_TYPE_'.strtoupper($this->object).'_GROUP')
+		);
 
 		$form = $this->openForm($data['name'], CTestArrayHelper::get($data, 'discovered', false));
 		$footer = ($this->standalone) ? $form : COverlayDialogElement::find()->one()->waitUntilReady()->getFooter();
@@ -470,7 +473,7 @@ class testFormGroups extends CWebTest {
 			$this->assertEquals($title, COverlayDialogElement::find()->one()->waitUntilReady()->getTitle());
 		}
 
-		$this->assertEquals(PHPUNIT_URL.'zabbix.php?action='.$this->object.'group.edit', $this->page->getCurrentUrl());
+		$this->assertEquals(PHPUNIT_URL.'zabbix.php?action=popup&popup='.$this->object.'group.edit'.'&groupid='.$groupid, $this->page->getCurrentUrl());
 		$this->assertEquals(['Add', 'Cancel'], $footer->query('button')->all()->filter(CElementFilter::CLICKABLE)->asText());
 		$form->fill(CTestArrayHelper::get($data, 'fields', []));
 		$form->submit();

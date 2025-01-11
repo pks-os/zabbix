@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -36,25 +36,18 @@
 			const form = document.forms['hosts'];
 
 			form.addEventListener('click', e => {
-				if (e.target.classList.contains('js-edit-template')) {
-					this.editTemplate({templateid: e.target.dataset.templateid});
-				}
-				else if (e.target.classList.contains('js-edit-proxy')) {
-					this.editProxy(e.target.dataset.proxyid);
-				}
-				else if (e.target.classList.contains('js-edit-proxy-group')) {
-					this.editProxyGroup(e.target.dataset.proxy_groupid);
-				}
-				else if (e.target.classList.contains('js-enable-host')) {
-					if (window.confirm(<?= json_encode(_('Enable selected host?')) ?>)) {
-						this.enable(e.target, {hostids: [e.target.dataset.hostid]});
-					}
+				if (e.target.classList.contains('js-enable-host')) {
+					this.enable(e.target, {hostids: [e.target.dataset.hostid]});
 				}
 				else if (e.target.classList.contains('js-disable-host')) {
-					if (window.confirm(<?= json_encode(_('Disable selected host?')) ?>)) {
-						this.disable(e.target, {hostids: [e.target.dataset.hostid]});
-					}
+					this.disable(e.target, {hostids: [e.target.dataset.hostid]});
 				}
+			});
+
+			document.querySelector('.js-create-host').addEventListener('click', () => {
+				window.popupManagerInstance.openPopup('host.edit',
+					this.applied_filter_groupids ? {groupids: this.applied_filter_groupids} : {}
+				);
 			});
 
 			form.querySelector('.js-massenable-host').addEventListener('click', e => {
@@ -93,6 +86,8 @@
 			form.querySelector('.js-massdelete-host').addEventListener('click', e => {
 				this.massDeleteHosts(e.target);
 			});
+
+			this.setSubmitCallback();
 		},
 
 		enable(target, parameters) {
@@ -103,7 +98,7 @@
 
 			this.postAction(curl, parameters)
 				.then(response => this.reload(response))
-				.finally(() => {
+				.catch(() => {
 					target.classList.remove('is-loading');
 					target.blur();
 				});
@@ -117,7 +112,7 @@
 
 			this.postAction(curl, parameters)
 				.then(response => this.reload(response))
-				.finally(() => {
+				.catch(() => {
 					target.classList.remove('is-loading');
 					target.blur();
 				});
@@ -133,43 +128,15 @@
 				})
 			})
 				.then(response => response.json())
-				.catch(() => {
+				.catch(error => {
 					clearMessages();
 
 					const message_box = makeMessageBox('bad', [<?= json_encode(_('Unexpected server error.')) ?>]);
 
 					addMessage(message_box);
+
+					throw error;
 				});
-		},
-
-		editTemplate(parameters) {
-			const overlay = PopUp('template.edit', parameters, {
-				dialogueid: 'templates-form',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', e => this.reload({success: e.detail.success}));
-		},
-
-		editProxy(proxyid) {
-			const overlay = PopUp('popup.proxy.edit', {proxyid}, {
-				dialogueid: 'proxy_edit',
-				dialogue_class: 'modal-popup-static',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', e => this.reload({success: e.detail.success}));
-		},
-
-		editProxyGroup(proxy_groupid) {
-			const overlay = PopUp('popup.proxygroup.edit', {proxy_groupid}, {
-				dialogueid: 'proxy-group-edit',
-				dialogue_class: 'modal-popup-static',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', e => this.reload({success: e.detail.success}));
 		},
 
 		reload(result) {
@@ -231,35 +198,6 @@
 				.trigger('change');
 		},
 
-		createHost() {
-			const host_data = this.applied_filter_groupids
-				? {groupids: this.applied_filter_groupids}
-				: {};
-
-			this.openHostPopup(host_data);
-		},
-
-		editHost(e, hostid) {
-			e.preventDefault();
-			const host_data = {hostid};
-
-			this.openHostPopup(host_data);
-		},
-
-		openHostPopup(host_data) {
-			const original_url = location.href;
-			const overlay = PopUp('popup.host.edit', host_data, {
-				dialogueid: 'host_edit',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', this.events.elementSuccess, {once: true});
-			overlay.$dialogue[0].addEventListener('dialogue.close', () => {
-				history.replaceState({}, '', original_url);
-			}, {once: true});
-		},
-
 		massDeleteHosts(button) {
 			const confirm_text = Object.keys(chkbxRange.getSelectedIds()).length > 1
 				? <?= json_encode(_('Delete selected hosts?')) ?>
@@ -294,21 +232,19 @@
 				});
 		},
 
-		events: {
-			elementSuccess(e) {
-				const data = e.detail;
+		setSubmitCallback() {
+			window.popupManagerInstance.setSubmitCallback((e) => {
+				if ('success' in e.detail) {
+					postMessageOk(e.detail.success.title);
 
-				if ('success' in data) {
-					postMessageOk(data.success.title);
-
-					if ('messages' in data.success) {
-						postMessageDetails('success', data.success.messages);
+					if ('messages' in e.detail.success) {
+						postMessageDetails('success', e.detail.success.messages);
 					}
 				}
 
 				uncheckTableRows('hosts');
 				location.href = location.href;
-			}
+			});
 		}
 	};
 </script>

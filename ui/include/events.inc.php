@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -435,13 +435,19 @@ function make_small_eventlist(array $startEvent, array $allowed) {
 		 */
 		addTriggerValueStyle($cell_status, $value, $value_clock, $is_acknowledged);
 
+		$problem_update_url = (new CUrl('zabbix.php'))
+			->setArgument('action', 'popup')
+			->setArgument('popup', 'acknowledge.edit')
+			->setArgument('eventids[]', $event['eventid'])
+			->getUrl();
+
 		// Create acknowledge link.
 		$problem_update_link = ($allowed['add_comments'] || $allowed['change_severity'] || $allowed['acknowledge']
 				|| $can_be_closed || $allowed['suppress_problems'] || $allowed['rank_change'])
-			? (new CLink(_('Update')))
+			? (new CLink(_('Update'), $problem_update_url))
 				->addClass(ZBX_STYLE_LINK_ALT)
-				->setAttribute('data-eventid', $event['eventid'])
-				->onClick('acknowledgePopUp({eventids: [this.dataset.eventid]}, this);')
+				->setAttribute('data-eventids[]', $event['eventid'])
+				->setAttribute('data-action', 'acknowledge.edit')
 			: new CSpan(_('Update'));
 
 		$table->addRow([

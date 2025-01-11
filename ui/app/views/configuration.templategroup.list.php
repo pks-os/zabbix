@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -89,9 +89,15 @@ foreach ($data['groups'] as $group) {
 		}
 
 		if ($data['allowed_ui_conf_templates']) {
-			$templates_output[] = (new CLink($template['name']))
-				->addClass('js-edit-template')
+			$template_url = (new CUrl('zabbix.php'))
+				->setArgument('action', 'popup')
+				->setArgument('popup', 'template.edit')
+				->setArgument('templateid', $template['templateid'])
+				->getUrl();
+
+			$templates_output[] = (new CLink($template['name'], $template_url))
 				->setAttribute('data-templateid', $template['templateid'])
+				->setAttribute('data-action', 'template.edit')
 				->addClass(ZBX_STYLE_LINK_ALT)
 				->addClass(ZBX_STYLE_GREY);
 		}
@@ -102,13 +108,15 @@ foreach ($data['groups'] as $group) {
 
 	$template_count = $data['groupCounts'][$group['groupid']]['templates'];
 
-	$name = (new CLink($group['name'],
-		(new CUrl('zabbix.php'))
-			->setArgument('action', 'templategroup.edit')
-			->setArgument('groupid', $group['groupid'])
-	))
-		->addClass('js-edit-templategroup')
-		->setAttribute('data-groupid', $group['groupid']);
+	$templategroup_url = (new CUrl('zabbix.php'))
+		->setArgument('action', 'popup')
+		->setArgument('popup', 'templategroup.edit')
+		->setArgument('groupid', $group['groupid'])
+		->getUrl();
+
+	$name = (new CLink($group['name'], $templategroup_url))
+		->setAttribute('data-groupid', $group['groupid'])
+		->setAttribute('data-action', 'templategroup.edit');
 
 	$count = '';
 	if ($template_count > 0) {

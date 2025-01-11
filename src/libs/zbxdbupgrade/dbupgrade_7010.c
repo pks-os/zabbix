@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -14,6 +14,7 @@
 
 #include "dbupgrade.h"
 #include "zbxdb.h"
+#include "zbxalgo.h"
 
 /*
  * 7.2 development database patches
@@ -260,6 +261,236 @@ static int	DBpatch_7010019(void)
 	return SUCCEED;
 }
 
+static int	DBpatch_7010020(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute("insert into module (moduleid,id,relative_path,status,config) values"
+			" (" ZBX_FS_UI64 ",'hostcard','widgets/hostcard',%d,'[]')", zbx_db_get_maxid("module"), 1))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+static int	DBpatch_7010021(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute(
+			"update widget_field"
+				" set name=replace(name,'tags','columns.0.item_tags')"
+				" where widgetid in (select widgetid from widget where type='dataover')"
+					" and name like 'tags.%%'"))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+static int	DBpatch_7010022(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute(
+			"update widget_field"
+				" set name='columns.0.item_tags_evaltype'"
+				" where widgetid in ("
+					"select widgetid from widget where type='dataover'"
+				")"
+					" and name='evaltype'"))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+static int	DBpatch_7010023(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute(
+			"update widget_field"
+				" set name='layout'"
+				" where widgetid in ("
+					"select widgetid from widget where type='dataover' or type='trigover'"
+				")"
+					" and name='style'"))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+static int	DBpatch_7010024(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute("update widget set type='topitems' where type='dataover'"))
+		return FAIL;
+
+	return SUCCEED;
+}
+
+static int	DBpatch_7010025(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute(
+			"update module set id='topitems',relative_path='widgets/topitems' where id='dataover'"))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+static int	DBpatch_7010026(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute(
+			"update widget_field"
+				" set name='problems',value_int=0"	/* 0 - PROBLEMS_ALL */
+				" where widgetid in (select widgetid from widget where type='topitems')"
+					" and name='show_suppressed'"))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+#define ZBX_WIDGET_FIELD_TYPE_INT32	0
+
+static int	DBpatch_7010027(void)
+{
+	int			size, ret = SUCCEED;
+	zbx_db_result_t		result;
+	zbx_db_row_t		row;
+	zbx_vector_uint64_t	widgetids;
+	zbx_db_insert_t		db_insert;
+
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	zbx_vector_uint64_create(&widgetids);
+
+	if (NULL == (result = zbx_db_select("select max_overview_table_size from config")) ||
+			NULL == (row = zbx_db_fetch(result)))
+	{
+		ret = FAIL;
+		goto out;
+	}
+
+	size = atoi(row[0]);
+
+	/* 10 - DEFAULT_HOSTS_COUNT / DEFAULT_ITEMS_COUNT */
+	if (10 == size)
+		goto out;
+
+	/* 100 - ZBX_MAX_WIDGET_LINES */
+	if (100 < size)
+		size = 100;
+
+	zbx_db_select_uint64("select widgetid from widget where type='topitems'", &widgetids);
+
+	if (0 == widgetids.values_num)
+		goto out;
+
+	zbx_db_insert_prepare(&db_insert, "widget_field", "widget_fieldid", "widgetid", "type", "name", "value_int",
+			(char *)NULL);
+
+	for (int i = 0; i < widgetids.values_num; i++)
+	{
+		zbx_db_insert_add_values(&db_insert, __UINT64_C(0), widgetids.values[i], ZBX_WIDGET_FIELD_TYPE_INT32,
+				"host_ordering_limit", size);
+		zbx_db_insert_add_values(&db_insert, __UINT64_C(0), widgetids.values[i], ZBX_WIDGET_FIELD_TYPE_INT32,
+				"item_ordering_limit", size);
+	}
+
+	zbx_db_insert_autoincrement(&db_insert, "widget_fieldid");
+	ret = zbx_db_insert_execute(&db_insert);
+
+	zbx_db_insert_clean(&db_insert);
+out:
+	zbx_vector_uint64_destroy(&widgetids);
+	zbx_db_free_result(result);
+
+	return ret;
+}
+
+static int	DBpatch_7010028(void)
+{
+	int			ret = SUCCEED;
+	zbx_vector_uint64_t	widgetids;
+	zbx_db_insert_t		db_insert;
+
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	zbx_vector_uint64_create(&widgetids);
+
+	zbx_db_select_uint64("select widgetid from widget where type='topitems'", &widgetids);
+
+	if (0 == widgetids.values_num)
+		goto out;
+
+	zbx_db_insert_prepare(&db_insert, "widget_field", "widget_fieldid", "widgetid", "type", "name", "value_int",
+			"value_str", (char *)NULL);
+
+	for (int i = 0; i < widgetids.values_num; i++)
+	{
+#		define ZBX_WIDGET_FIELD_TYPE_STR	1
+#		define ORDERBY_ITEM_NAME		2
+		zbx_db_insert_add_values(&db_insert, __UINT64_C(0), widgetids.values[i], ZBX_WIDGET_FIELD_TYPE_STR,
+				"columns.0.items.0", 0, "*");
+		zbx_db_insert_add_values(&db_insert, __UINT64_C(0), widgetids.values[i], ZBX_WIDGET_FIELD_TYPE_INT32,
+				"item_ordering_order_by", ORDERBY_ITEM_NAME, "");
+#		undef ORDERBY_ITEM_NAME
+#		undef ZBX_WIDGET_FIELD_TYPE_STR
+	}
+
+	zbx_db_insert_autoincrement(&db_insert, "widget_fieldid");
+	ret = zbx_db_insert_execute(&db_insert);
+
+	zbx_db_insert_clean(&db_insert);
+out:
+	zbx_vector_uint64_destroy(&widgetids);
+
+	return ret;
+}
+
+static int	DBpatch_7010029(void)
+{
+	if (0 == (DBget_program_type() & ZBX_PROGRAM_TYPE_SERVER))
+		return SUCCEED;
+
+	if (ZBX_DB_OK > zbx_db_execute(
+			"update profiles"
+				" set value_str='topitems'"
+				" where idx='web.dashboard.last_widget_type'"
+					" and value_str='dataover'"))
+	{
+		return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+#undef ZBX_WIDGET_FIELD_TYPE_INT32
+
 #endif
 
 DBPATCH_START(7010)
@@ -286,5 +517,15 @@ DBPATCH_ADD(7010016, 0, 1)
 DBPATCH_ADD(7010017, 0, 1)
 DBPATCH_ADD(7010018, 0, 1)
 DBPATCH_ADD(7010019, 0, 1)
+DBPATCH_ADD(7010020, 0, 1)
+DBPATCH_ADD(7010021, 0, 1)
+DBPATCH_ADD(7010022, 0, 1)
+DBPATCH_ADD(7010023, 0, 1)
+DBPATCH_ADD(7010024, 0, 1)
+DBPATCH_ADD(7010025, 0, 1)
+DBPATCH_ADD(7010026, 0, 1)
+DBPATCH_ADD(7010027, 0, 1)
+DBPATCH_ADD(7010028, 0, 1)
+DBPATCH_ADD(7010029, 0, 1)
 
 DBPATCH_END()

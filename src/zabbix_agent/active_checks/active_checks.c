@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1019,8 +1019,8 @@ static int	check_response(const char *response)
 	if (SUCCEED == ret && SUCCEED == zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_INFO, info, sizeof(info), NULL))
 		zabbix_log(LOG_LEVEL_DEBUG, "info from server: '%s'", info);
 
-	if (FAIL != zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_HISTORY_UPLOAD, value, sizeof(value), NULL) &&
-			0 == strcmp(value, ZBX_PROTO_VALUE_HISTORY_UPLOAD_DISABLED))
+	if (SUCCEED == ret && FAIL != zbx_json_value_by_name(&jp, ZBX_PROTO_TAG_HISTORY_UPLOAD, value, sizeof(value),
+			NULL) && 0 == strcmp(value, ZBX_PROTO_VALUE_HISTORY_UPLOAD_DISABLED))
 	{
 		history_upload = ZBX_HISTORY_UPLOAD_DISABLED;
 	}
@@ -1930,6 +1930,7 @@ ZBX_THREAD_ENTRY(active_checks_thread, args)
 	zbx_tls_init_child(activechks_args_in->zbx_config_tls, activechks_args_in->zbx_get_program_type_cb_arg, NULL);
 #endif
 	init_active_metrics(activechks_args_in->config_buffer_size);
+	zbx_cfg_set_process_num(process_num);
 
 #ifndef _WINDOWS
 	zbx_set_sigusr_handler(zbx_active_checks_sigusr_handler);

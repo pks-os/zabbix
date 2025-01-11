@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Zabbix 6.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-19 13:48+0300\n"
-"PO-Revision-Date: 2024-08-31 15:59+0000\n"
+"PO-Revision-Date: 2024-11-21 12:47+0000\n"
 "Last-Translator: Atsushi Tanaka <kha00760@nifty.com>\n"
 "Language-Team: Zabbix\n"
 "Language: ja\n"
@@ -672,6 +672,10 @@ msgid "Action disabled"
 msgid_plural "Actions disabled"
 msgstr[0] "アクションを無効にしました"
 
+#: app/controllers/CControllerPopup.php:42
+msgid "Action edit"
+msgstr "アクションの編集"
+
 #: app/controllers/CControllerActionEnable.php:84
 msgid "Action enabled"
 msgid_plural "Actions enabled"
@@ -1262,6 +1266,11 @@ msgstr "グリッドに揃える"
 msgid "All"
 msgstr "すべて"
 
+#: app/views/mediatype.list.php:79 app/views/mediatype.list.php:81
+#: app/views/mediatype.list.php:90 app/views/popup.operation.edit.php:160
+msgid "All available"
+msgstr ""
+
 #: app/views/monitoring.dashboard.view.php:189
 msgid "All dashboards"
 msgstr "すべてのダッシュボード"
@@ -1633,7 +1642,7 @@ msgstr "少なくとも1つのホストグループまたはホストが選択�
 
 #: include/classes/setup/CFrontendSetup.php:252
 msgid "At least one of MySQL or PostgreSQL should be supported."
-msgstr ""
+msgstr "MySQLまたはPostgreSQLの少なくとも1つをサポートする必要があります。"
 
 #: include/classes/setup/CFrontendSetup.php:241
 msgid "At least one of MySQL, PostgreSQL or Oracle should be supported."
@@ -1692,7 +1701,7 @@ msgstr "属性"
 
 #: app/views/administration.geomaps.edit.php:86
 msgid "Attribution text"
-msgstr ""
+msgstr "帰属情報"
 
 #: app/controllers/CControllerAuditLogList.php:190
 #: app/views/administration.audit.settings.edit.php:29
@@ -1888,7 +1897,7 @@ msgstr "推測されやすいパスワードの回避"
 
 #: jsLoader.php:172
 msgid "Awaiting data"
-msgstr ""
+msgstr "データを待っています"
 
 #: widgets/svggraph/views/widget.edit.php:51
 msgid "Axes"
@@ -4459,11 +4468,11 @@ msgstr "複製"
 #: app/views/configuration.host.edit.php:61
 #: app/views/js/popup.host.edit.js.php:44 host_prototypes.php:203
 msgid "Cloned host parameter values have been modified."
-msgstr ""
+msgstr "クローンされたホストのパラメーター値が変更されました。"
 
 #: app/views/js/template.edit.js.php:40
 msgid "Cloned template parameter values have been modified."
-msgstr ""
+msgstr "クローンされたテンプレートのパラメーター値が変更されました。"
 
 #: app/views/popup.import.compare.php:47 app/views/popup.token.view.php:84
 #: include/func.inc.php:1814 include/views/js/monitoring.sysmaps.js.php:86
@@ -4584,7 +4593,7 @@ msgstr "コマンド"
 
 #: app/views/administration.timeouts.edit.php:138
 msgid "Communication"
-msgstr "コミュニケーション"
+msgstr "通信"
 
 #: include/items.inc.php:946
 msgctxt "SNMP Community"
@@ -4968,6 +4977,10 @@ msgid "Connector disabled"
 msgid_plural "Connectors disabled"
 msgstr[0] "コネクタを無効にしました"
 
+#: app/controllers/CControllerPopup.php:43
+msgid "Connector edit"
+msgstr "コネクタの編集"
+
 #: app/controllers/CControllerConnectorEnable.php:69
 msgid "Connector enabled"
 msgid_plural "Connectors enabled"
@@ -5122,6 +5135,10 @@ msgstr[0] "%1$sトリガーをコピー"
 msgid "Copy to clipboard"
 msgstr "クリップボードにコピー"
 
+#: app/controllers/CControllerPopup.php:44
+msgid "Correlation edit"
+msgstr "相関関係の編集"
+
 #: app/controllers/CControllerPopupTriggerExpr.php:52
 #: app/controllers/CControllerPopupTriggerExpr.php:693
 #: app/controllers/CControllerPopupTriggerExpr.php:734
@@ -5149,7 +5166,7 @@ msgstr "ログの一致行数。整数値を返す。"
 
 #: include/classes/data/CItemData.php:2645
 msgid "Count of network checks enqueued in the discovery queue."
-msgstr ""
+msgstr "ディスカバリキュー内に登録されたネットワークチェックの数。"
 
 #: include/classes/data/CItemData.php:2638
 msgid "Count of values enqueued in the connector queue."
@@ -5349,7 +5366,7 @@ msgstr "新規作成"
 
 #: jsLoader.php:372
 msgid "Create new report"
-msgstr ""
+msgstr "新規レポートの作成"
 
 #: app/views/administration.proxy.list.php:239
 msgid "Create proxy"
@@ -6107,7 +6124,7 @@ msgstr "削除とクリア"
 
 #: app/views/js/template.list.js.php:130
 msgid "Delete and clear selected template? (Warning: all linked hosts will be cleared!)"
-msgstr ""
+msgstr "選択したテンプレートとデータを削除しますか？(警告: リンクしているすべてのホストからデータが削除されます！)"
 
 #: app/views/js/template.list.js.php:127
 msgid "Delete and clear selected templates? (Warning: all linked hosts will be cleared!)"
@@ -6165,7 +6182,7 @@ msgstr "選択した要素間のリンクを削除しますか？"
 #: include/views/configuration.host.discovery.edit.php:716
 #: include/views/configuration.host.discovery.list.php:151
 msgid "Delete lost resources"
-msgstr ""
+msgstr "ディスカバリできなくなったリソースを削除する"
 
 #: app/views/maintenance.edit.php:275
 msgid "Delete maintenance period?"
@@ -6592,7 +6609,7 @@ msgstr "説明"
 
 #: widgets/gauge/includes/WidgetForm.php:204
 msgid "Description size"
-msgstr ""
+msgstr "説明のサイズ"
 
 #: include/classes/data/CItemData.php:1503
 msgid "Detailed listing of installed packages. Returns text in JSON format"
@@ -6708,7 +6725,7 @@ msgstr "選択したプロキシによるホストの監視を無効にします
 #: include/views/configuration.host.discovery.edit.php:730
 #: include/views/configuration.host.discovery.list.php:166
 msgid "Disable lost resources"
-msgstr ""
+msgstr "ディスカバリできなくなったリソースを無効にする"
 
 #: app/views/administration.token.list.php:211
 #: app/views/administration.user.token.list.php:164
@@ -6877,7 +6894,7 @@ msgstr "無効"
 #: app/views/configuration.host.list.php:511 app/views/item.list.php:219
 #: app/views/trigger.list.php:358
 msgid "Disabled automatically by an LLD rule."
-msgstr ""
+msgstr "LLDルールによって自動的に無効になりました。"
 
 #: app/views/administration.trigdisplay.edit.php:146
 #: widgets/geomap/Widget.php:44
@@ -7055,6 +7072,10 @@ msgid "Discovery rule disabled"
 msgid_plural "Discovery rules disabled"
 msgstr[0] "ディスカバリルールを無効にしました"
 
+#: app/controllers/CControllerPopup.php:45
+msgid "Discovery rule edit"
+msgstr "ディスカバリルールの編集"
+
 #: app/controllers/CControllerDiscoveryEnable.php:68 host_discovery.php:580
 msgid "Discovery rule enabled"
 msgid_plural "Discovery rules enabled"
@@ -7099,9 +7120,17 @@ msgstr "表示"
 msgid "Display OK triggers for"
 msgstr "正常イベントの表示期間"
 
+#: app/views/mediatype.list.php:75
+msgid "Display actions"
+msgstr ""
+
 #: app/partials/monitoring.latest.view.html.php:309
 msgid "Display graph"
 msgstr "グラフ表示"
+
+#: widgets/tophosts/views/column.edit.php:136
+msgid "Display item value as"
+msgstr ""
 
 #: widgets/itemhistory/views/column.edit.php:241
 msgid "Display local time"
@@ -7122,6 +7151,10 @@ msgstr "障害数の表示"
 #: app/partials/monitoring.latest.view.html.php:308
 msgid "Display stacked graph"
 msgstr "積算グラフ表示"
+
+#: widgets/topitems/views/column.edit.php:90
+msgid "Display value as"
+msgstr ""
 
 #: app/controllers/CControllerHintboxActionlist.php:99
 #: app/views/administration.queue.details.php:86
@@ -7801,7 +7834,7 @@ msgstr "エラーバジェット"
 
 #: include/classes/api/services/CUser.php:3506
 msgid "Error decoding Duo result."
-msgstr ""
+msgstr "Duoの結果のデコード中にエラーが発生しました。"
 
 #: include/db.inc.php:554
 #, c-format
@@ -8239,7 +8272,7 @@ msgstr "ダッシュボードの共有の更新に失敗しました。"
 
 #: jsLoader.php:128
 msgid "Failed to update time selector."
-msgstr ""
+msgstr "タイムセレクターの更新に失敗しました。"
 
 #: jsLoader.php:143
 msgid "Failed to update widget properties."
@@ -8423,6 +8456,10 @@ msgstr "面"
 #: include/views/monitoring.sysmap.list.php:60 report2.php:506
 msgid "Filter"
 msgstr "フィルター"
+
+#: app/views/mediatype.list.php:76
+msgid "Filter actions by the scope of media type usage:"
+msgstr ""
 
 #: app/views/js/popup.tabfilter.edit.js.php:63
 msgid "Filter deleted"
@@ -8696,7 +8733,7 @@ msgstr "Zabbixサーバーによるスクリプト実行は設定により無効
 
 #: app/partials/administration.system.info.php:138
 msgid "Global scripts on Zabbix server"
-msgstr ""
+msgstr "Zabbixサーバー上のグローバルスクリプト"
 
 #: app/views/popup.proxy.edit.php:199
 msgid "Global timeouts"
@@ -9377,6 +9414,10 @@ msgstr "ホスト稼働状況"
 msgid "Host cannot have more than one default interface of the same type."
 msgstr "ホストに同じタイプのデフォルトインターフェースは1つしか設定できません。"
 
+#: widgets/hostcard/Widget.php:32
+msgid "Host card"
+msgstr ""
+
 #: app/views/administration.proxy.list.php:91 hostinventoriesoverview.php:85
 #: widgets/tophosts/includes/WidgetForm.php:159
 msgid "Host count"
@@ -9397,6 +9438,10 @@ msgstr[0] "ホストを削除しました"
 msgid "Host disabled"
 msgid_plural "Hosts disabled"
 msgstr[0] "ホストを無効にしました"
+
+#: app/controllers/CControllerPopup.php:46
+msgid "Host edit"
+msgstr ""
 
 #: app/controllers/CControllerHostGroupEnable.php:76
 #: app/controllers/CControllerPopupMassupdateHost.php:491
@@ -9454,6 +9499,10 @@ msgstr "ホストグループを追加しました"
 msgid "Host group deleted"
 msgid_plural "Host groups deleted"
 msgstr[0] "ホストグループを削除しました"
+
+#: app/controllers/CControllerPopup.php:47
+msgid "Host group edit"
+msgstr ""
 
 #: include/views/js/monitoring.sysmaps.js.php:112
 msgid "Host group elements"
@@ -9586,6 +9635,12 @@ msgstr "ホストナビゲータ"
 #: include/hosts.inc.php:284
 msgid "Host networks"
 msgstr "ホストネットワーク"
+
+#: widgets/topitems/includes/WidgetForm.php:116
+#: widgets/topitems/includes/WidgetForm.php:128
+#: widgets/topitems/views/widget.edit.php:63
+msgid "Host ordering"
+msgstr ""
 
 #: widgets/hostnavigator/includes/WidgetForm.php:65
 msgid "Host patterns"
@@ -9797,7 +9852,7 @@ msgstr "データの保存期間"
 #: include/views/configuration.item.edit.php:1084
 #: include/views/configuration.item.prototype.edit.php:952
 msgid "However, if \"Check for not supported value\" steps are configured, they are always placed and executed first (with \"any error\" being the last of them)."
-msgstr ""
+msgstr "ただし、\"サポートしていない値のチェック\"ステップが設定されている場合、それらは常に最初に配置されて実行されます (\"エラー\"は最後に実行されます)。"
 
 #: include/locales.inc.php:47
 msgid "Hungarian (hu_HU)"
@@ -10955,7 +11010,7 @@ msgstr "\"%1$s\"フィールドのための値が正しくありません。"
 #: widgets/tophosts/actions/WidgetView.php:569
 #, c-format
 msgid "Incorrect value for field \"%1$s\": %2$s."
-msgstr "フィールド\"%1$s\": %2$sの値が正しくありません。"
+msgstr "フィールド\"%1$s\"の値が正しくありません: %2$s。"
 
 #: include/classes/helpers/CServiceHelper.php:149
 msgid "Increase by"
@@ -11667,6 +11722,12 @@ msgstr "ホスト\"%1$s\"のインベントリを無効にしました。"
 msgid "Inventory field"
 msgstr "インベントリフィールド"
 
+#: include/classes/html/widgets/fields/CWidgetFieldMultiSelectHostInventoryView.php:30
+#: include/classes/widgets/fields/CWidgetFieldMultiSelectHostInventory.php:48
+#: widgets/hostcard/includes/WidgetForm.php:50
+msgid "Inventory fields"
+msgstr ""
+
 #: app/views/popup.massupdate.host.php:175
 #: app/views/popup.operation.edit.php:402
 msgid "Inventory mode"
@@ -11741,6 +11802,10 @@ msgid "Item disabled"
 msgid_plural "Items disabled"
 msgstr[0] "アイテムを無効にしました"
 
+#: app/controllers/CControllerPopup.php:48
+msgid "Item edit"
+msgstr ""
+
 #: items.php:707
 msgid "Item enabled"
 msgid_plural "Items enabled"
@@ -11775,6 +11840,12 @@ msgstr "アイテムナビゲータ"
 msgid "Item not selected"
 msgstr "アイテムが選択されていません"
 
+#: widgets/topitems/includes/WidgetForm.php:145
+#: widgets/topitems/includes/WidgetForm.php:157
+#: widgets/topitems/views/widget.edit.php:81
+msgid "Item ordering"
+msgstr ""
+
 #: widgets/piechart/views/widget.edit.js.php:203
 #: widgets/svggraph/views/widget.edit.js.php:281
 msgid "Item pattern"
@@ -11805,6 +11876,10 @@ msgstr "アイテムのプロトタイプを追加しました"
 msgid "Item prototype deleted"
 msgid_plural "Item prototypes deleted"
 msgstr[0] "アイテムのプロトタイプを削除しました"
+
+#: app/controllers/CControllerPopup.php:49
+msgid "Item prototype edit"
+msgstr ""
 
 #: app/controllers/CControllerPopupMassupdateItem.php:286
 #: disc_prototypes.php:457 disc_prototypes.php:483 disc_prototypes.php:522
@@ -12313,6 +12388,15 @@ msgstr "長さ"
 msgid "Licensed under"
 msgstr "ライセンスは"
 
+#: widgets/topitems/includes/WidgetForm.php:125
+#: widgets/topitems/includes/WidgetForm.php:154
+msgid "Limit"
+msgstr ""
+
+#: widgets/topitems/views/widget.edit.php:95
+msgid "Limit applies to each \"Item pattern\" separately"
+msgstr ""
+
 #: app/views/administration.gui.edit.php:93
 msgid "Limit for search and filter results"
 msgstr "検索/フィルターの項目の上限値"
@@ -12338,6 +12422,11 @@ msgstr "線タイプ"
 #: include/views/js/monitoring.sysmaps.js.php:598
 msgid "Line width"
 msgstr "線幅"
+
+#: widgets/svggraph/includes/WidgetForm.php:301
+#: widgets/svggraph/includes/WidgetForm.php:333
+msgid "Linear"
+msgstr ""
 
 #: app/views/popup.massupdate.host.php:42 app/views/template.massupdate.php:45
 #: include/views/monitoring.sysmap.constructor.php:43
@@ -12524,7 +12613,7 @@ msgstr "ログ"
 
 #: app/views/administration.audit.settings.edit.php:50
 msgid "Log changes by low-level discovery, network discovery and autoregistration"
-msgstr ""
+msgstr "ローレベルディスカバリ、ネットワークディスカバリ、自動登録による変更をログに記録する"
 
 #: include/classes/data/CItemData.php:1063
 msgid "Log file monitoring with log rotation support. Returns log"
@@ -12547,6 +12636,11 @@ msgstr "ログの時間の形式"
 #: app/views/administration.miscconfig.edit.php:82
 msgid "Log unmatched SNMP traps"
 msgstr "マッチしないSNMPトラップをログに記録"
+
+#: widgets/svggraph/includes/WidgetForm.php:302
+#: widgets/svggraph/includes/WidgetForm.php:334
+msgid "Logarithmic"
+msgstr ""
 
 #: app/controllers/CControllerAuditLogList.php:201
 #: app/views/administration.user.list.php:135
@@ -12707,6 +12801,10 @@ msgstr "メンテナンス"
 #, c-format
 msgid "Maintenance \"%1$s\" already exists."
 msgstr "メンテナンス\"%1$s\"はすでに存在します。"
+
+#: app/controllers/CControllerPopup.php:50
+msgid "Maintenance edit"
+msgstr ""
 
 #: app/controllers/CControllerMaintenanceTimePeriodEdit.php:142
 #: app/views/maintenance.edit.php:238
@@ -13132,6 +13230,11 @@ msgstr "メディアタイプ"
 msgid "Media type \"%1$s\" already exists."
 msgstr "メディアタイプ\"%1$s\"はすでに存在しています。"
 
+#: include/classes/api/services/CMediatype.php:878
+#, c-format
+msgid "Media type \"%1$s\" is used by action \"%2$s\"."
+msgstr ""
+
 #: app/controllers/CControllerMediatypeCreate.php:187
 msgid "Media type added"
 msgstr "メディアタイプを追加しました"
@@ -13149,6 +13252,10 @@ msgstr[0] "メディアタイプを無効にしました"
 #: app/views/administration.user.edit.php:359
 msgid "Media type disabled by Administration."
 msgstr "管理者によってメディアタイプを無効にされました。"
+
+#: app/controllers/CControllerPopup.php:51
+msgid "Media type edit"
+msgstr ""
 
 #: app/controllers/CControllerMediatypeEnable.php:87
 #: app/controllers/CControllerMediatypeEnable.php:94
@@ -13206,7 +13313,7 @@ msgstr "管理者によってメディアタイプを無効にされました。
 
 #: app/views/popup.media.php:78
 msgid "Media types disabled in Alerts."
-msgstr ""
+msgstr "メディアタイプが無効になっています。"
 
 #: include/classes/api/services/CMediatype.php:873
 #, c-format
@@ -13490,6 +13597,10 @@ msgstr[0] "モジュールを削除しました: %1$s。"
 msgid "Module disabled"
 msgid_plural "Modules disabled"
 msgstr[0] ""
+
+#: app/controllers/CControllerPopup.php:52
+msgid "Module edit"
+msgstr ""
 
 #: app/controllers/CControllerModuleEnable.php:91
 msgid "Module enabled"
@@ -14924,6 +15035,10 @@ msgstr "iノードの数値またはパーセンテージ。数値であれば�
 msgid "Numeral systems"
 msgstr "数値変換"
 
+#: widgets/tophosts/views/column.edit.php:139
+msgid "Numeric"
+msgstr ""
+
 #: app/partials/configuration.filter.items.php:143
 #: app/views/popup.massupdate.item.php:148 include/items.inc.php:125
 #: include/triggers.inc.php:1214 include/views/configuration.item.edit.php:123
@@ -15864,6 +15979,10 @@ msgstr "リンクなしで貼り付け"
 msgid "Pattern"
 msgstr "パターン"
 
+#: widgets/topitems/includes/CWidgetFieldColumnsListView.php:58
+msgid "Patterns"
+msgstr ""
+
 #: app/views/popup.action.edit.php:238
 msgid "Pause operations for suppressed problems"
 msgstr "メンテナンス中の場合に実行を保留"
@@ -16137,7 +16256,7 @@ msgstr "保存前処理"
 #: include/views/configuration.item.edit.php:1082
 #: include/views/configuration.item.prototype.edit.php:950
 msgid "Preprocessing is a transformation before saving the value to the database. It is possible to define a sequence of preprocessing steps, and those are executed in the order they are set."
-msgstr ""
+msgstr "保存前処理は、値をデータベースに保存する前の変換です。一連の前処理手順を定義することができ、それらは設定された順序で実行されます。"
 
 #: app/views/popup.itemtestedit.view.php:375
 #: app/views/popup.massupdate.item.php:203
@@ -16522,6 +16641,10 @@ msgid "Proxy deleted"
 msgid_plural "Proxies deleted"
 msgstr[0] "プロキシを削除しました"
 
+#: app/controllers/CControllerPopup.php:53
+msgid "Proxy edit"
+msgstr ""
+
 #: app/controllers/CControllerAuditLogList.php:239
 #: app/partials/configuration.host.edit.html.php:266
 #: app/views/configuration.host.list.php:153
@@ -16554,6 +16677,10 @@ msgstr "プロキシグループを追加しました"
 msgid "Proxy group deleted"
 msgid_plural "Proxy groups deleted"
 msgstr[0] ""
+
+#: app/controllers/CControllerPopup.php:54
+msgid "Proxy group edit"
+msgstr ""
 
 #: app/controllers/CControllerProxyGroupUpdate.php:74
 msgid "Proxy group updated"
@@ -17660,6 +17787,10 @@ msgid "SLA disabled"
 msgid_plural "SLAs disabled"
 msgstr[0] "SLAを無効にしました"
 
+#: app/controllers/CControllerPopup.php:58
+msgid "SLA edit"
+msgstr ""
+
 #: app/controllers/CControllerSlaEnable.php:73
 msgid "SLA enabled"
 msgid_plural "SLAs enabled"
@@ -17770,7 +17901,7 @@ msgstr "SNMPコミュニティ"
 
 #: include/items.inc.php:1570
 msgid "SNMP get value"
-msgstr ""
+msgstr "SNMP getの値"
 
 #: include/views/inventory.host.view.php:65
 msgid "SNMP interfaces"
@@ -18094,6 +18225,10 @@ msgstr[0] "スクリプトを削除しました"
 msgid "Script does not have parameters."
 msgstr "スクリプトにはパラメータがありません。"
 
+#: app/controllers/CControllerPopup.php:56
+msgid "Script edit"
+msgstr ""
+
 #: app/views/administration.timeouts.edit.php:168
 msgid "Script execution"
 msgstr "スクリプトの実行"
@@ -18306,6 +18441,10 @@ msgstr "送信先"
 msgid "Send to back"
 msgstr "再後面へ"
 
+#: app/views/popup.operation.edit.php:189
+msgid "Send to media type"
+msgstr ""
+
 #: app/views/popup.operation.edit.php:108
 msgid "Send to user groups"
 msgstr "ユーザーグループに送信"
@@ -18421,6 +18560,10 @@ msgstr "サービスデータの保存期間"
 msgid "Service deleted"
 msgid_plural "Services deleted"
 msgstr[0] "サービスを削除しました"
+
+#: app/controllers/CControllerPopup.php:57
+msgid "Service edit"
+msgstr ""
 
 #: app/views/administration.userrole.edit.php:166
 #: app/views/administration.userrole.edit.php:207
@@ -19057,7 +19200,18 @@ msgstr "セクター間のスペース"
 
 #: include/locales.inc.php:62
 msgid "Spanish (es_ES)"
-msgstr "スペイン語(es_ES)"
+msgstr "スペイン語 (es_ES)"
+
+#: widgets/item/includes/WidgetForm.php:191
+#: widgets/item/includes/WidgetForm.php:321
+#: widgets/tophosts/views/column.edit.php:155
+#: widgets/tophosts/views/column.edit.php:162
+msgid "Sparkline"
+msgstr ""
+
+#: app/views/mediatype.list.php:83 app/views/mediatype.list.php:91
+msgid "Specific"
+msgstr ""
 
 #: include/classes/helpers/CRoleHelper.php:199
 msgid "Specified role was not found."
@@ -19805,6 +19959,10 @@ msgid "Template deleted"
 msgid_plural "Templates deleted"
 msgstr[0] "テンプレートを削除しました"
 
+#: app/controllers/CControllerPopup.php:59
+msgid "Template edit"
+msgstr ""
+
 #: app/controllers/CControllerAuditLogList.php:259
 #: app/partials/configuration.templategroup.edit.html.php:52
 #: app/views/configuration.templategroup.edit.php:52
@@ -19826,6 +19984,10 @@ msgstr "テンプレートグループを追加しました"
 msgid "Template group deleted"
 msgid_plural "Template groups deleted"
 msgstr[0] "テンプレートグループを削除しました"
+
+#: app/controllers/CControllerPopup.php:55
+msgid "Template group edit"
+msgstr ""
 
 #: app/controllers/CControllerTemplateGroupUpdate.php:86
 msgid "Template group updated"
@@ -20490,6 +20652,10 @@ msgstr "今日"
 msgid "Today so far"
 msgstr "今日(現在まで)"
 
+#: app/controllers/CControllerPopup.php:60
+msgid "Token edit"
+msgstr ""
+
 #: include/views/js/monitoring.sysmaps.js.php:40
 #: include/views/js/monitoring.sysmaps.js.php:159
 #: include/views/js/monitoring.sysmaps.js.php:684
@@ -20518,6 +20684,10 @@ msgstr "上位Nホスト"
 #: widgets/tophosts/Widget.php:34
 msgid "Top hosts"
 msgstr "上位ホスト"
+
+#: widgets/topitems/Widget.php:32
+msgid "Top items"
+msgstr ""
 
 #: widgets/toptriggers/Widget.php:29
 msgid "Top triggers"
@@ -20744,6 +20914,10 @@ msgstr[0] "トリガーを無効にしました"
 msgid "Trigger displaying options"
 msgstr "イベントのステータス"
 
+#: app/controllers/CControllerPopup.php:61
+msgid "Trigger edit"
+msgstr ""
+
 #: app/controllers/CControllerTriggerEnable.php:67
 msgid "Trigger enabled"
 msgid_plural "Triggers enabled"
@@ -20880,6 +21054,10 @@ msgstr "トリガーのプロトタイプを追加しました"
 msgid "Trigger prototype deleted"
 msgid_plural "Trigger prototypes deleted"
 msgstr[0] "トリガーのプロトタイプを削除しました"
+
+#: app/controllers/CControllerPopup.php:62
+msgid "Trigger prototype edit"
+msgstr ""
 
 #: app/controllers/CControllerTriggerMassupdate.php:219
 #: app/controllers/CControllerTriggerPrototypeDisable.php:76
@@ -21693,7 +21871,7 @@ msgstr "このユーザー属性の値を参照するには、グループフィ
 
 #: app/views/administration.miscconfig.edit.php:123
 msgid "Use X-Frame-Options HTTP header"
-msgstr ""
+msgstr "X-Frame-Options HTTPヘッダを使用する"
 
 #: app/partials/configuration.host.interface.row.php:222
 msgid "Use combined requests"
@@ -24338,6 +24516,18 @@ msgstr "ディレクトリを指定してください"
 msgid "discovery rule \"%1$s\" on host \"%2$s\" is not monitored"
 msgstr "ホスト\"%2$s\"上のディスカバリルール\"%1$s\"は監視されていません"
 
+#: app/views/mediatype.list.php:78
+msgid "display all actions"
+msgstr ""
+
+#: app/views/mediatype.list.php:80
+msgid "display only actions where All available media types are used in action operation"
+msgstr ""
+
+#: app/views/mediatype.list.php:84
+msgid "display only actions where specific media type is used in action operation"
+msgstr ""
+
 #: app/views/popup.lldoperation.php:65 include/actions.inc.php:27
 #: include/classes/helpers/CCorrelationHelper.php:37
 #: include/views/js/configuration.host.discovery.edit.overr.js.php:164
@@ -24697,6 +24887,10 @@ msgstr "ホストグループ名が正しくありません"
 msgid "invalid host name"
 msgstr "ホスト名が正しくありません"
 
+#: include/classes/widgets/fields/CWidgetFieldMultiSelectHostInventory.php:48
+msgid "invalid inventory field"
+msgstr ""
+
 #: include/classes/validators/CHistFunctionValidator.php:82
 #: include/classes/validators/CMathFunctionValidator.php:86
 #, c-format
@@ -25019,6 +25213,11 @@ msgstr "monodec() - アイテムの値が減少し続けているかチェック
 #: app/controllers/CControllerPopupTriggerExpr.php:858
 msgid "monoinc() - Check for continuous item value increase (1 - data is monotonic, 0 - otherwise), Mode (strict - require strict monotonicity)"
 msgstr "monoinc() - アイテムの値が増加し続けているかチェック (1 - 単調、0 - その他)、モード (strict - 厳密な単調性)"
+
+#: widgets/hostcard/views/widget.view.php:157
+#: widgets/hostcard/views/widget.view.php:338
+msgid "more"
+msgstr ""
 
 #: include/func.inc.php:571
 msgctxt "millisecond short"

@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -247,12 +247,19 @@ foreach ($data['discoveries'] as $discovery) {
 			$description[] = $discovery['master_item']['name'];
 		}
 		else {
-			$description[] = (new CLink($discovery['master_item']['name']))
+			$item_url = (new CUrl('zabbix.php'))
+				->setArgument('action', 'popup')
+				->setArgument('popup', 'item.edit')
+				->setArgument('context', $data['context'])
+				->setArgument('itemid', $discovery['master_item']['itemid'])
+				->getUrl();
+
+			$description[] = (new CLink($discovery['master_item']['name'], $item_url))
 				->addClass(ZBX_STYLE_LINK_ALT)
 				->addClass(ZBX_STYLE_TEAL)
-				->addClass('js-update-item')
 				->setAttribute('data-itemid', $discovery['master_item']['itemid'])
-				->setAttribute('data-context', $data['context']);
+				->setAttribute('data-context', $data['context'])
+				->setAttribute('data-action', 'item.edit');
 		}
 
 		$description[] = NAME_DELIMITER;
@@ -311,9 +318,18 @@ foreach ($data['discoveries'] as $discovery) {
 		$checkbox->setAttribute('data-actions', 'execute');
 	}
 
-	$host = (new CLink($discovery['hosts'][0]['name']))
-		->setAttribute('data-hostid', $discovery['hosts'][0]['hostid'])
-		->addClass('js-edit-'.$data['context'])
+	$host_url = (new CUrl('zabbix.php'))
+		->setArgument('action', 'popup')
+		->setArgument('popup', $data['context'] === 'host' ? 'host.edit' : 'template.edit')
+		->setArgument($data['context'] === 'host' ? 'hostid' : 'templateid', $discovery['hosts'][0]['hostid'])
+		->getUrl();
+
+	$host = (new CLink($discovery['hosts'][0]['name'], $host_url))
+		->setAttribute($data['context'] === 'host'
+			? 'data-hostid'
+			: 'data-templateid', $discovery['hosts'][0]['hostid']
+		)
+		->setAttribute('data-action', $data['context'] === 'host' ? 'host.edit' : 'template.edit')
 		->addClass(ZBX_STYLE_WORDBREAK);
 
 	$discoveryTable->addRow([

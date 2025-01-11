@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -77,18 +77,18 @@ class testDashboardWidgetCommunication extends testWidgets {
 
 	const DEFAULT_WIDGET_CONTENT = [
 		'Hostgroups page' => [
-			'Data overview listener' => [
+			'Top items listener' => [
 				[
 					'Hosts' => self::FIRST_HOST_NAME,
-					'Trapper item' => '3'
+					'Trapper item' => '3.00'
 				],
 				[
 					'Hosts' => self::SECOND_HOST_NAME,
-					'Trapper item' => '4'
+					'Trapper item' => '4.00'
 				],
 				[
 					'Hosts' => self::THIRD_HOST_NAME,
-					'Trapper item' => '5'
+					'Trapper item' => '5.00'
 				]
 			],
 			'Geomap listener' => [
@@ -176,18 +176,18 @@ class testDashboardWidgetCommunication extends testWidgets {
 			]
 		],
 		'Hosts page' => [
-			'Data overview listener' => [
+			'Top items listener' => [
 				[
 					'Hosts' => self::FIRST_HOST_NAME,
-					'Trapper item' => '3'
+					'Trapper item' => '3.00'
 				],
 				[
 					'Hosts' => self::SECOND_HOST_NAME,
-					'Trapper item' => '4'
+					'Trapper item' => '4.00'
 				],
 				[
 					'Hosts' => self::THIRD_HOST_NAME,
-					'Trapper item' => '5'
+					'Trapper item' => '5.00'
 				]
 			],
 			'Geomap listener' => [
@@ -743,8 +743,8 @@ class testDashboardWidgetCommunication extends testWidgets {
 								]
 							],
 							[
-								'type' => 'dataover',
-								'name' => 'Data overview listener',
+								'type' => 'topitems',
+								'name' => 'Top items listener',
 								'x' => 21,
 								'y' => 0,
 								'width' => 19,
@@ -757,23 +757,28 @@ class testDashboardWidgetCommunication extends testWidgets {
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
-										'name' => 'tags.0.tag',
+										'name' => 'columns.0.item_tags.0.tag',
 										'value' => 'item'
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
-										'name' => 'tags.0.operator',
+										'name' => 'columns.0.item_tags.0.operator',
 										'value' => TAG_OPERATOR_LIKE
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
-										'name' => 'tags.0.value',
+										'name' => 'columns.0.item_tags.0.value',
 										'value' => 'widget communication'
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
 										'name' => 'rf_rate',
 										'value' => 0
+									],
+									[
+										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+										'name' => 'columns.0.items.0',
+										'value' => 'Trapper item'
 									]
 								]
 							],
@@ -982,7 +987,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
-										'name' => 'style',
+										'name' => 'layout',
 										'value' => STYLE_TOP
 									],
 									[
@@ -1364,8 +1369,8 @@ class testDashboardWidgetCommunication extends testWidgets {
 								]
 							],
 							[
-								'type' => 'dataover',
-								'name' => 'Data overview listener',
+								'type' => 'topitems',
+								'name' => 'Top items listener',
 								'x' => 21,
 								'y' => 0,
 								'width' => 15,
@@ -1378,23 +1383,28 @@ class testDashboardWidgetCommunication extends testWidgets {
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
-										'name' => 'tags.0.tag',
+										'name' => 'columns.0.item_tags.0.tag',
 										'value' => 'item'
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
-										'name' => 'tags.0.operator',
+										'name' => 'columns.0.item_tags.0.operator',
 										'value' => TAG_OPERATOR_LIKE
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
-										'name' => 'tags.0.value',
+										'name' => 'columns.0.item_tags.0.value',
 										'value' => 'widget communication'
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
 										'name' => 'rf_rate',
 										'value' => 0
+									],
+									[
+										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+										'name' => 'columns.0.items.0',
+										'value' => 'Trapper item'
 									]
 								]
 							],
@@ -1713,7 +1723,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
-										'name' => 'style',
+										'name' => 'layout',
 										'value' => STYLE_TOP
 									],
 									[
@@ -2180,7 +2190,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 								]
 							],
 							[
-								'type' => 'dataover',
+								'type' => 'topitems',
 								'name' => 'Host and group from different broadcasters',
 								'x' => 22,
 								'y' => 6,
@@ -2199,23 +2209,28 @@ class testDashboardWidgetCommunication extends testWidgets {
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
-										'name' => 'tags.0.tag',
+										'name' => 'columns.0.item_tags.0.tag',
 										'value' => 'item'
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
-										'name' => 'tags.0.operator',
+										'name' => 'columns.0.item_tags.0.operator',
 										'value' => TAG_OPERATOR_LIKE
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
-										'name' => 'tags.0.value',
+										'name' => 'columns.0.item_tags.0.value',
 										'value' => 'widget communication'
 									],
 									[
 										'type' => ZBX_WIDGET_FIELD_TYPE_INT32,
 										'name' => 'rf_rate',
 										'value' => 0
+									],
+									[
+										'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+										'name' => 'columns.0.items.0',
+										'value' => 'Trapper item'
 									]
 								]
 							]
@@ -2442,9 +2457,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Map hostgroup broadcaster',
 					'select_element' => self::FIRST_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2503,9 +2518,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Map hostgroup broadcaster',
 					'select_element' => self::SECOND_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2571,9 +2586,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Problem hosts hostgroup broadcaster',
 					'select_element' => self::FIRST_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2632,9 +2647,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Problem hosts hostgroup broadcaster',
 					'select_element' => self::THIRD_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::THIRD_HOST_NAME,
-							'Trapper item' => '5'
+							'Trapper item' => '5.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2693,9 +2708,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Problems by severity hostgroup broadcaster',
 					'select_element' => self::SECOND_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2754,9 +2769,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Problems by severity hostgroup broadcaster',
 					'select_element' => self::THIRD_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::THIRD_HOST_NAME,
-							'Trapper item' => '5'
+							'Trapper item' => '5.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2815,9 +2830,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Web monitoring hostgroup broadcaster',
 					'select_element' => self::FIRST_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2876,9 +2891,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Web monitoring hostgroup broadcaster',
 					'select_element' => self::SECOND_HOSTGROUP_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2937,9 +2952,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Geomap host broadcaster',
 					'select_element' => self::GEOMAP_ICON_INDEXES[self::FIRST_HOST_NAME],
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -2984,9 +2999,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Geomap host broadcaster',
 					'select_element' => self::GEOMAP_ICON_INDEXES[self::SECOND_HOST_NAME],
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3031,9 +3046,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Honeycomb host broadcaster',
 					'select_element' => self::THIRD_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::THIRD_HOST_NAME,
-							'Trapper item' => '5'
+							'Trapper item' => '5.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3078,9 +3093,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Honeycomb host broadcaster',
 					'select_element' => self::FIRST_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3125,9 +3140,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Map host broadcaster',
 					'select_element' => self::SECOND_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3172,9 +3187,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Map host broadcaster',
 					'select_element' => self::THIRD_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::THIRD_HOST_NAME,
-							'Trapper item' => '5'
+							'Trapper item' => '5.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3226,9 +3241,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Top hosts host broadcaster',
 					'select_element' => self::FIRST_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3273,9 +3288,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Top hosts host broadcaster',
 					'select_element' => self::SECOND_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3320,9 +3335,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Host navigator broadcaster',
 					'select_element' => self::THIRD_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::THIRD_HOST_NAME,
-							'Trapper item' => '5'
+							'Trapper item' => '5.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3367,9 +3382,9 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'broadcaster' => 'Host navigator broadcaster',
 					'select_element' => self::FIRST_HOST_NAME,
 					'expected' => [
-						'Data overview listener' => [
+						'Top items listener' => [
 							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
+							'Trapper item' => '3.00'
 						],
 						'Geomap listener' => [
 							self::GEOMAP_FILTERED_ICON_INDEX => [
@@ -3622,43 +3637,6 @@ class testDashboardWidgetCommunication extends testWidgets {
 
 	public function getMixedBroadcastingWidgetData() {
 		return [
-			'Broadcasting only hostgroup' => [
-				[
-					'page' => 'Multi-broadcasting page',
-					'broadcasters' => [
-						'Map mixed broadcaster' => self::SECOND_HOSTGROUP_NAME
-
-					],
-					'expected' => [
-						'Both host and group from single broadcaster' => [
-							self::SECOND_HOST_NAME => 4
-						],
-						'Host and group from different broadcasters' => [
-							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
-						]
-					]
-				]
-			],
-			'Broadcasting only host' => [
-				[
-					'page' => 'Multi-broadcasting page',
-					'broadcasters' => [
-						'Map mixed broadcaster' => self::THIRD_HOST_NAME,
-						'Honeycomb mixed broadcaster' => self::FIRST_HOST_NAME
-
-					],
-					'expected' => [
-						'Both host and group from single broadcaster' => [
-							self::THIRD_HOST_NAME => 5
-						],
-						'Host and group from different broadcasters' => [
-							'Hosts' => self::FIRST_HOST_NAME,
-							'Trapper item' => '3'
-						]
-					]
-				]
-			],
 			'Broadcasting hostgroups and hosts from the same map widget - first group and then host' => [
 				[
 					'page' => 'Multi-broadcasting page',
@@ -3673,15 +3651,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 						'Host and group from different broadcasters' => [
 							[
 								'Hosts' => self::FIRST_HOST_NAME,
-								'Trapper item' => '3'
-							],
-							[
-								'Hosts' => self::SECOND_HOST_NAME,
-								'Trapper item' => '4'
-							],
-							[
-								'Hosts' => self::THIRD_HOST_NAME,
-								'Trapper item' => '5'
+								'Trapper item' => '3.00'
 							]
 						]
 					]
@@ -3692,8 +3662,8 @@ class testDashboardWidgetCommunication extends testWidgets {
 					'page' => 'Multi-broadcasting page',
 					'broadcasters' => [
 						'Map mixed broadcaster' => self::SECOND_HOST_NAME,
-						'Map mixed broadcaster' => self::THIRD_HOSTGROUP_NAME
-
+						'Map mixed broadcaster' => self::THIRD_HOSTGROUP_NAME,
+						'Honeycomb mixed broadcaster' => self::THIRD_HOST_NAME
 					],
 					'expected' => [
 						'Both host and group from single broadcaster' => [
@@ -3701,7 +3671,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 						],
 						'Host and group from different broadcasters' => [
 							'Hosts' => self::THIRD_HOST_NAME,
-							'Trapper item' => '5'
+							'Trapper item' => '5.00'
 						]
 					]
 				]
@@ -3720,7 +3690,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 						],
 						'Host and group from different broadcasters' => [
 							'Hosts' => self::SECOND_HOST_NAME,
-							'Trapper item' => '4'
+							'Trapper item' => '4.00'
 						]
 					]
 				]
@@ -3765,32 +3735,6 @@ class testDashboardWidgetCommunication extends testWidgets {
 	}
 
 	/**
-	 * Check state of item listening widgets if nothing is selected in the broadcasting widget.
-	 */
-	public function testDashboardWidgetCommunication_CheckNoData() {
-		$no_data_listeners = [
-			'Gauge listener' => 'Awaiting data',
-			'Graph (classic) listener' => 'Awaiting data',
-			'Item value listener' => 'Awaiting data',
-			'Pie chart listener' => 'No data'
-		];
-
-		$this->page->login()->open('zabbix.php?action=dashboard.view&dashboardid='.self::$dashboardid)->waitUntilReady();
-		$dashboard = CDashboardElement::find()->waitUntilReady()->one();
-		$dashboard->selectPage('Items page');
-
-		foreach ($no_data_listeners as $listener_name => $no_data_text) {
-			$element_class = ($no_data_text === 'Awaiting data')
-				? 'no-data-message'
-				: 'svg-pie-chart-total-value-no-data';
-
-			$this->assertEquals($no_data_text, $dashboard->getWidget($listener_name)->query('class', $element_class)
-					->one()->getText()
-			);
-		}
-	}
-
-	/**
 	 * Check listener widget behavior when broadcasting widget is deleted.
 	 */
 	public function testDashboardWidgetCommunication_BroadcasterDeletion() {
@@ -3824,12 +3768,12 @@ class testDashboardWidgetCommunication extends testWidgets {
 					],
 					'select' => [
 						'widget' => 'new',
-						'element' => self::SECOND_HOST_NAME
+						'element' => self::FIRST_HOST_NAME
 					],
 					'expected' => [
 						'Problems host listener' => [
-							'Host' => self::SECOND_HOST_NAME,
-							'Problem • Severity' => self::SECOND_HOST_TRIGGER
+							'Host' => self::FIRST_HOST_NAME,
+							'Problem • Severity' => self::FIRST_HOST_TRIGGER
 						]
 					]
 				]
@@ -3851,21 +3795,13 @@ class testDashboardWidgetCommunication extends testWidgets {
 					],
 					'select' => [
 						'widget' => 'new',
-						'element' => self::THIRD_HOST_NAME
+						'element' => self::SECOND_HOST_NAME
 					],
 					'expected' => [
 						'Problems host listener' => [
 							[
 								'Host' => self::THIRD_HOST_NAME,
 								'Problem • Severity' => self::THIRD_HOST_TRIGGER
-							],
-							[
-								'Host' => self::SECOND_HOST_NAME,
-								'Problem • Severity' => self::SECOND_HOST_TRIGGER
-							],
-							[
-								'Host' => self::FIRST_HOST_NAME,
-								'Problem • Severity' => self::FIRST_HOST_TRIGGER
 							]
 						]
 					]
@@ -4016,7 +3952,7 @@ class testDashboardWidgetCommunication extends testWidgets {
 			$listener_type = $this->getWidgetType($listener);
 
 			switch ($listener_type) {
-				case 'dataover':
+				case 'topitems':
 				case 'problemhosts':
 				case 'problems':
 				case 'problemsbysv':
@@ -4075,8 +4011,6 @@ class testDashboardWidgetCommunication extends testWidgets {
 					break;
 
 				case 'trigover':
-					$widget_table = $listener->asTable();
-
 					$this->assertTableDataColumn($values['triggers'], 'Triggers', 'xpath://h4[text()='.
 							CXPathHelper::escapeQuotes($listener_name).']/../..//table'
 					);

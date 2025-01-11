@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -19,8 +19,9 @@
 
 #ifdef HAVE_LIBEVENT
 #include "zbxip.h"
-#include <event2/util.h>
 #include <event2/dns.h>
+#include <event2/event.h>
+#include <event2/util.h>
 typedef struct
 {
 	void				*data;
@@ -227,7 +228,11 @@ void	zbx_async_dns_update_host_addresses(struct evdns_base *dnsbase)
 			int	ret;
 
 			zabbix_log(LOG_LEVEL_DEBUG, "%s() update host addresses", __func__);
+
+#if defined(LIBEVENT_VERSION_NUMBER) && LIBEVENT_VERSION_NUMBER >= 0x02010600
 			evdns_base_clear_host_addresses(dnsbase);
+#endif
+
 			if (0 != (ret = evdns_base_resolv_conf_parse(dnsbase, DNS_OPTIONS_ALL, ZBX_RES_CONF_FILE)))
 			{
 				zabbix_log(LOG_LEVEL_ERR, "cannot parse resolv.conf result: %s",

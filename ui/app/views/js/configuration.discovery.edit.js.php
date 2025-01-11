@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -22,7 +22,7 @@
 window.drule_edit_popup = new class {
 
 	init({druleid, dchecks, drule}) {
-		this.overlay = overlays_stack.getById('discoveryForm');
+		this.overlay = overlays_stack.getById('discovery.edit');
 		this.dialogue = this.overlay.$dialogue[0];
 		this.form = this.overlay.$dialogue.$body[0].querySelector('form');
 
@@ -31,6 +31,11 @@ window.drule_edit_popup = new class {
 		this.drule = drule;
 		this.dcheckid = getUniqueId();
 		this.available_device_types = [<?= SVC_AGENT ?>, <?= SVC_SNMPv1 ?>, <?= SVC_SNMPv2c ?>, <?= SVC_SNMPv3 ?>];
+
+		const backurl = new Curl('zabbix.php');
+
+		backurl.setArgument('action', 'discovery.list');
+		this.overlay.backurl = backurl.getUrl();
 
 		document.getElementById('discovery_by').addEventListener('change', () => this.#updateForm());
 
@@ -372,7 +377,7 @@ window.drule_edit_popup = new class {
 		this.#post(curl.getUrl(), {druleids: [this.druleid]}, (response) => {
 			overlayDialogueDestroy(this.overlay.dialogueid);
 
-			this.dialogue.dispatchEvent(new CustomEvent('dialogue.submit', {detail: response.success}));
+			this.dialogue.dispatchEvent(new CustomEvent('dialogue.submit', {detail: response}));
 		});
 	}
 
@@ -389,7 +394,7 @@ window.drule_edit_popup = new class {
 		this.#post(curl.getUrl(), fields, (response) => {
 			overlayDialogueDestroy(this.overlay.dialogueid);
 
-			this.dialogue.dispatchEvent(new CustomEvent('dialogue.submit', {detail: response.success}));
+			this.dialogue.dispatchEvent(new CustomEvent('dialogue.submit', {detail: response}));
 		});
 	}
 

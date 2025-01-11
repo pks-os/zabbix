@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -187,6 +187,7 @@
 			});
 
 			jqBlink.blink();
+			this.#setSubmitCallback();
 		}
 
 		#edit() {
@@ -269,8 +270,8 @@
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify(request_data)
 			})
-				.then((response) => response.json())
-				.then((response) => {
+				.then(response => response.json())
+				.then(response => {
 					if ('error' in response) {
 						throw {error: response.error};
 					}
@@ -520,73 +521,49 @@
 					e.preventDefault();
 					e.returnValue = '';
 				}
-			},
+			}
+		};
 
-			elementSuccess: e => {
-				const data = e.detail;
+		executeNow(target, data) {
+			const curl = new Curl('zabbix.php');
 
-				if ('success' in data) {
-					postMessageOk(data.success.title);
+			curl.setArgument('action', 'item.execute');
 
-					if ('messages' in data.success) {
-						postMessageDetails('success', data.success.messages);
+			data[CSRF_TOKEN_NAME] = <?= json_encode(CCsrfTokenHelper::get('item')) ?>;
+
+			return fetch(curl.getUrl(), {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(data)
+			})
+				.then(response => response.json())
+				.then(response => {
+					clearMessages();
+					if (response.error) {
+						addMessage(makeMessageBox('bad', response.error.messages, response.error.title))
+					}
+					else {
+						addMessage(makeMessageBox('good', [], response.success.title))
+					}
+				})
+				.catch(() => {
+					clearMessages();
+					addMessage(makeMessageBox('bad', [<?= json_encode(_('Unexpected server error.')) ?>]));
+				});
+		}
+
+		#setSubmitCallback() {
+			window.popupManagerInstance.setSubmitCallback((e) => {
+				if ('success' in e.detail) {
+					postMessageOk(e.detail.success.title);
+
+					if ('messages' in e.detail.success) {
+						postMessageDetails('success', e.detail.success.messages);
 					}
 				}
 
 				location.href = location.href;
-			}
-		};
-
-		editItem(target, data) {
-			const overlay = PopUp('item.edit', data, {
-				dialogueid: 'item-edit',
-				dialogue_class: 'modal-popup-large',
-				trigger_element: target,
-				prevent_navigation: true
 			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', this.#listeners.elementSuccess, {once: true});
-		}
-
-		editHost(hostid) {
-			const host_data = {hostid};
-
-			this.#openHostPopup(host_data);
-		}
-
-		#openHostPopup(host_data) {
-			const original_url = location.href;
-
-			const overlay = PopUp('popup.host.edit', host_data, {
-				dialogueid: 'host_edit',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', this.#listeners.elementSuccess, {once: true});
-			overlay.$dialogue[0].addEventListener('dialogue.close', () => {
-				history.replaceState({}, '', original_url);
-			}, {once: true});
-		}
-
-		editTemplate(parameters) {
-			const overlay = PopUp('template.edit', parameters, {
-				dialogueid: 'templates-form',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', this.#listeners.elementSuccess, {once: true});
-		}
-
-		editTrigger(trigger_data) {
-			const overlay = PopUp('trigger.edit', trigger_data, {
-				dialogueid: 'trigger-edit',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit', this.#listeners.elementSuccess, {once: true});
 		}
 	}
 </script>

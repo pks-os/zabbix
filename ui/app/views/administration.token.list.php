@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -154,9 +154,17 @@ $token_table = (new CTableInfo())
 $csrf_token = CCsrfTokenHelper::get('token');
 
 foreach ($data['tokens'] as $token) {
-	$name = (new CLink($token['name'], 'javascript:void(0)'))
-		->addClass('js-edit-token')
-		->setAttribute('data-tokenid', $token['tokenid']);
+	$token_url = (new CUrl('zabbix.php'))
+		->setArgument('action', 'popup')
+		->setArgument('popup', 'token.edit')
+		->setArgument('tokenid', $token['tokenid'])
+		->setArgument('admin_mode', 1)
+		->getUrl();
+
+	$name = (new CLink($token['name'], $token_url))
+		->setAttribute('data-tokenid', $token['tokenid'])
+		->setAttribute('data-action', 'token.edit')
+		->setAttribute('data-admin_mode', '1');
 
 	$token_table->addRow([
 		new CCheckBox('tokenids['.$token['tokenid'].']', $token['tokenid']),

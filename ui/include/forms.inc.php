@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1004,11 +1004,16 @@ function makeParentTemplatesList(array $parent_templates): array {
 
 	foreach ($parent_templates as $templateid => $template) {
 		if ($allowed_ui_conf_templates && $template['permission'] == PERM_READ_WRITE) {
-			$template_list[] = (new CLink($template['name'],
-				(new CUrl('templates.php'))
-					->setArgument('form', 'update')
-					->setArgument('templateid', $templateid)
-			))->setTarget('_blank');
+			$template_url = (new CUrl('zabbix.php'))
+				->setArgument('action', 'popup')
+				->setArgument('popup', 'template.edit')
+				->setArgument('templateid', $templateid)
+				->getUrl();
+
+			$template_list[] = (new CLink($template['name'], $template_url))
+				->setAttribute('data-templateid', $templateid)
+				->setAttribute('data-action', 'template.edit')
+				->addClass('js-edit-template');
 		}
 		else {
 			$template_list[] = (new CSpan($template['name']))->addClass(ZBX_STYLE_GREY);

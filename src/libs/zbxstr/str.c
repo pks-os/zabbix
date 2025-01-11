@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1531,6 +1531,29 @@ int	zbx_is_utf8(const char *text)
 		 */
 		if (utf32 > 0x10ffff || 0xd800 == (utf32 & 0xf800))
 			return FAIL;
+	}
+
+	return SUCCEED;
+}
+
+/******************************************************************************
+ *                                                                            *
+ * Purpose: checks ascii characters to be printable                           *
+ *                                                                            *
+ * Parameters: text - [IN] pointer to string                                  *
+ *                                                                            *
+ * Return value: SUCCEED if string is valid or FAIL otherwise                 *
+ *                                                                            *
+ ******************************************************************************/
+int	zbx_is_ascii_printable(const char *text)
+{
+	while ('\0' != *text)
+	{
+		/* single ASCII character */
+		if (0 == (*text & 0x80) && 0 == isprint(*text) && 0 == isspace(*text))
+			return FAIL;
+
+		text++;
 	}
 
 	return SUCCEED;

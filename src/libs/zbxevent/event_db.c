@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -63,7 +63,7 @@ int	zbx_event_db_get_host(const zbx_db_event *event, zbx_dc_host_t *host, char *
 			break;
 		case EVENT_SOURCE_DISCOVERY:
 			offset += zbx_snprintf(sql + offset, sizeof(sql) - offset,
-					" from hosts h,interface i,dservices ds"
+					" from interface i,dservices ds,hosts h"
 					" left join host_proxy hp on h.hostid=hp.hostid"
 					" where h.hostid=i.hostid"
 						" and i.ip=ds.ip"

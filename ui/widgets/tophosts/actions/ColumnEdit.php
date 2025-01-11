@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -44,6 +44,7 @@ class ColumnEdit extends CController {
 			'base_color' =>			'string',
 			'display_value_as' =>	'int32',
 			'display' =>			'int32',
+			'sparkline' =>			'array',
 			'min' =>				'string',
 			'max' =>				'string',
 			'thresholds' =>			'array',
@@ -175,6 +176,7 @@ class ColumnEdit extends CController {
 				'base_color' => '',
 				'display_value_as' => CWidgetFieldColumnsList::DISPLAY_VALUE_AS_NUMERIC,
 				'display' => CWidgetFieldColumnsList::DISPLAY_AS_IS,
+				'sparkline' => CWidgetFieldColumnsList::SPARKLINE_DEFAULT,
 				'min' => '',
 				'max' => '',
 				'thresholds' => [],

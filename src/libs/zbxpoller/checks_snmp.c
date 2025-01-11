@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -1033,20 +1033,26 @@ static void	zbx_snmp_close_session(zbx_snmp_sess_t	session)
 
 static char	*zbx_sprint_asn_octet_str_dyn(const struct variable_list *var)
 {
-	if (var->type != ASN_OCTET_STR || NULL != memchr(var->val.string, '\0', var->val_len))
+#define ZBX_MAC_ADDRESS_LEN	6
+	/* don't guess output format if length is equal to MAC address to avoid false positive UTF-8 */
+	if (var->type != ASN_OCTET_STR || NULL != memchr(var->val.string, '\0', var->val_len) ||
+			ZBX_MAC_ADDRESS_LEN == var->val_len)
+	{
 		return NULL;
+	}
 
 	char	*strval_dyn = (char *)zbx_malloc(NULL, var->val_len + 1);
 
 	memcpy(strval_dyn, var->val.string, var->val_len);
 	strval_dyn[var->val_len] = '\0';
 
-	if (FAIL == zbx_is_utf8(strval_dyn))
+	if (FAIL == zbx_is_ascii_printable(strval_dyn) || FAIL == zbx_is_utf8(strval_dyn))
 		zbx_free(strval_dyn);
 	else
 		zabbix_log(LOG_LEVEL_DEBUG, "%s() full value:'%s'", __func__, strval_dyn);
 
 	return strval_dyn;
+#undef ZBX_MAC_ADDRESS_LEN
 }
 
 static char	*zbx_snmp_get_octet_string(const struct variable_list *var, unsigned char *string_type,
@@ -2621,12 +2627,23 @@ static int	snmp_bulkwalk_handle_response(int status, struct snmp_pdu *response,
 		{
 			if (ZBX_SNMP_GET == snmp_oid_type)
 			{
-				zbx_snprintf(error, max_error_len, "OID mismatched");
-				ret = NOTSUPPORTED;
-			}
+				if (SUCCEED == ZBX_CHECK_LOG_LEVEL(LOG_LEVEL_DEBUG))
+				{
+					char	oid_resp[MAX_OID_LEN], oid_req[MAX_OID_LEN];
 
-			bulkwalk_context->running = 0;
-			break;
+					snprint_objid(oid_resp, sizeof(oid_req), var->name, var->name_length);
+					snprint_objid(oid_req, sizeof(oid_resp), bulkwalk_context->name,
+							bulkwalk_context->name_length);
+
+					zabbix_log(LOG_LEVEL_DEBUG, "OID mismatch: GET response OID (%s) doesn't"
+							" match  request OID (%s)", oid_resp, oid_req);
+				}
+			}
+			else
+			{
+				bulkwalk_context->running = 0;
+				break;
+			}
 		}
 
 		if (ZBX_SNMP_GET == snmp_oid_type)

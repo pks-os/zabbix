@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -220,6 +220,7 @@ include __DIR__.'/configuration.host.discovery.edit.overr.js.php';
 			});
 
 			this.updateLostResourcesFields();
+			this.setSubmitCallback();
 		},
 
 		updateLostResourcesFields() {
@@ -321,67 +322,6 @@ include __DIR__.'/configuration.host.discovery.edit.overr.js.php';
 				});
 		},
 
-		editHost(e, hostid) {
-			e.preventDefault();
-			const host_data = {hostid};
-
-			this.openHostPopup(host_data);
-		},
-
-		editTemplate(e, templateid) {
-			e.preventDefault();
-			const template_data = {templateid};
-
-			this.openTemplatePopup(template_data);
-		},
-
-		openHostPopup(host_data) {
-			const original_url = location.href;
-			const overlay = PopUp('popup.host.edit', host_data, {
-				dialogueid: 'host_edit',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit',
-				this.events.elementSuccess.bind(this, this.context), {once: true}
-			);
-			overlay.$dialogue[0].addEventListener('dialogue.close', () => {
-				history.replaceState({}, '', original_url);
-			}, {once: true});
-		},
-
-		openTemplatePopup(template_data) {
-			const overlay =  PopUp('template.edit', template_data, {
-				dialogueid: 'templates-form',
-				dialogue_class: 'modal-popup-large',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit',
-				this.events.elementSuccess.bind(this, this.context), {once: true}
-			);
-		},
-
-		editProxy(e, proxyid) {
-			e.preventDefault();
-			const proxy_data = {proxyid};
-
-			this.openProxyPopup(proxy_data);
-		},
-
-		openProxyPopup(proxy_data) {
-			const overlay = PopUp('popup.proxy.edit', proxy_data, {
-				dialogueid: 'proxy_edit',
-				dialogue_class: 'modal-popup-static',
-				prevent_navigation: true
-			});
-
-			overlay.$dialogue[0].addEventListener('dialogue.submit',
-				this.events.elementSuccess.bind(this, this.context)
-			);
-		},
-
 		refresh() {
 			const url = new Curl('');
 			const form = document.getElementsByName(this.form_name)[0];
@@ -401,8 +341,8 @@ include __DIR__.'/configuration.host.discovery.edit.overr.js.php';
 			post(url.getUrl(), fields);
 		},
 
-		events: {
-			elementSuccess(context, e) {
+		setSubmitCallback() {
+			window.popupManagerInstance.setSubmitCallback((e) => {
 				const data = e.detail;
 				let curl = null;
 
@@ -415,7 +355,7 @@ include __DIR__.'/configuration.host.discovery.edit.overr.js.php';
 
 					if ('action' in data.success && data.success.action === 'delete') {
 						curl = new Curl('host_discovery.php');
-						curl.setArgument('context', context);
+						curl.setArgument('context', this.context);
 					}
 				}
 
@@ -425,7 +365,7 @@ include __DIR__.'/configuration.host.discovery.edit.overr.js.php';
 				else {
 					view.refresh();
 				}
-			}
+			});
 		}
 	};
 </script>

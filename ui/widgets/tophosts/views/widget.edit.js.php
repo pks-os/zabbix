@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -136,6 +136,19 @@ window.widget_tophosts_form = new class {
 				case 'time_period':
 					for (const [key, value] of Object.entries(data_value)) {
 						this.#addVar(`columns[${column_index}][time_period][${key}]`, value);
+					}
+					break;
+
+				case 'sparkline':
+					for (const [key, value] of Object.entries(data_value)) {
+						if (key === 'time_period') {
+							for (const [k, v] of Object.entries(value)) {
+								this.#addVar(`columns[${column_index}][sparkline][time_period][${k}]`, v);
+							}
+						}
+						else {
+							this.#addVar(`columns[${column_index}][sparkline][${key}]`, value);
+						}
 					}
 					break;
 

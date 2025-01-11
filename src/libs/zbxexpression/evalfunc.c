@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -317,7 +317,7 @@ static void	add_value_suffix(char *value, size_t max_len, const char *units, uns
 		case ITEM_VALUE_TYPE_UINT64:
 			if (0 == strcmp(units, "unixtime"))
 			{
-				time = (time_t)atoi(value);
+				time = (time_t)atol(value);
 				local_time = localtime(&time);
 				strftime(value, max_len, "%Y.%m.%d %H:%M:%S", local_time);
 				break;

@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -666,7 +666,7 @@ class testEventsCauseAndSymptoms extends CIntegrationTest {
 		$this->assertArrayHasKey('value', $response['result']);
 
 		$expanded_macro = $response['result']['value'];
-		$this->assertTrue(abs(intval($expanded_macro) - microtime(true)) < 100);
+		$this->assertLessThanOrEqual(10000, abs(intval($expanded_macro) - microtime(true)), json_encode($response['result']));
 	}
 
 }

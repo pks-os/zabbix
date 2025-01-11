@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -44,8 +44,8 @@
 
 #define ZBX_ELASTIC_MIN_VERSION					70000
 #define ZBX_ELASTIC_MIN_VERSION_STR				"7.x"
-#define ZBX_ELASTIC_MAX_VERSION					79999
-#define ZBX_ELASTIC_MAX_VERSION_STR				ZBX_ELASTIC_MIN_VERSION_STR
+#define ZBX_ELASTIC_MAX_VERSION					89999
+#define ZBX_ELASTIC_MAX_VERSION_STR				"8.x"
 
 #define ZBX_TIMESCALE_MIN_VERSION				20001
 #define ZBX_TIMESCALE_MIN_VERSION_STR				"2.0.1"

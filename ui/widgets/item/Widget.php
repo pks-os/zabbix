@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -25,6 +25,7 @@ class Widget extends CWidget {
 	public const SHOW_VALUE = 2;
 	public const SHOW_TIME = 3;
 	public const SHOW_CHANGE_INDICATOR = 4;
+	public const SHOW_SPARKLINE = 5;
 
 	// Objects positions.
 	public const POSITION_LEFT = 0;

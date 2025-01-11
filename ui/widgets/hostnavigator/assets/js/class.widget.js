@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -35,6 +35,13 @@ class CWidgetHostNavigator extends CWidget {
 	 * @type {number}
 	 */
 	#contents_scroll_top = 0;
+
+	/**
+	 * ID of selected host.
+	 *
+	 * @type {string|null}
+	 */
+	#selected_hostid = null;
 
 	/**
 	 * CSRF token for navigation.tree.toggle action.
@@ -88,22 +95,55 @@ class CWidgetHostNavigator extends CWidget {
 		this.#host_navigator.setValue({
 			hosts: response.hosts,
 			maintenances: response.maintenances,
-			is_limit_exceeded: response.is_limit_exceeded
+			is_limit_exceeded: response.is_limit_exceeded,
+			selected_hostid: this.#selected_hostid
 		});
+
+		if (!this.hasEverUpdated() && this.isReferred()) {
+			this.#selected_hostid = this.#getDefaultSelectable();
+
+			if (this.#selected_hostid !== null) {
+				this.#host_navigator.selectItem(this.#selected_hostid);
+			}
+		}
+	}
+
+	#broadcast() {
+		this.broadcast({
+			[CWidgetsData.DATA_TYPE_HOST_ID]: [this.#selected_hostid],
+			[CWidgetsData.DATA_TYPE_HOST_IDS]: [this.#selected_hostid]
+		});
+	}
+
+	#getDefaultSelectable() {
+		const selected_element = this._body.querySelector(`.${CNavigationTree.ZBX_STYLE_NODE_IS_ITEM}`);
+
+		return selected_element !== null ? selected_element.dataset.id : null;
+	}
+
+	onReferredUpdate() {
+		if (this.#host_navigator === null || this.#selected_hostid !== null) {
+			return;
+		}
+
+		this.#selected_hostid = this.#getDefaultSelectable();
+
+		if (this.#selected_hostid !== null) {
+			this.#host_navigator.selectItem(this.#selected_hostid);
+		}
 	}
 
 	#registerListeners() {
 		this.#listeners = {
-			hostSelect: e => {
-				this.broadcast({
-					[CWidgetsData.DATA_TYPE_HOST_ID]: [e.detail.hostid],
-					[CWidgetsData.DATA_TYPE_HOST_IDS]: [e.detail.hostid]
-				});
+			hostSelect: ({detail}) => {
+				this.#selected_hostid = detail.hostid;
+
+				this.#broadcast();
 			},
 
-			groupToggle: e => {
+			groupToggle: ({detail}) => {
 				if (this._widgetid) {
-					this.#updateProfiles(e.detail.is_open, e.detail.group_identifier, this._widgetid);
+					this.#updateProfiles(detail.is_open, detail.group_identifier, this._widgetid);
 				}
 			}
 		};

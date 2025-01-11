@@ -1,6 +1,6 @@
 <?php
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -216,7 +216,7 @@ class testFormMapConstructor extends CLegacyWebTest {
 		$form->getField('New triggers')->selectMultiple([
 				'First test trigger with tag priority',
 				'Fourth test trigger with tag priority',
-				'Lack of available memory'
+				'Linux: Lack of available memory'
 			], 'ЗАББИКС Сервер'
 		);
 		$form->query('button:Add')->one()->click();

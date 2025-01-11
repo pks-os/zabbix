@@ -1,6 +1,6 @@
 <?php declare(strict_types = 0);
 /*
-** Copyright (C) 2001-2024 Zabbix SIA
+** Copyright (C) 2001-2025 Zabbix SIA
 **
 ** This program is free software: you can redistribute it and/or modify it under the terms of
 ** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
@@ -92,10 +92,23 @@ class CSvgGraph extends CSvg {
 	private $time_till;
 
 	private $show_left_y_axis;
+	private $left_y_scale;
 	private $left_y_min;
 	private $left_y_min_calculated;
 	private $left_y_max;
 	private $left_y_max_calculated;
+
+	// Logarithmic scale variables
+	private $left_y_has_zero = false;
+	private $left_y_max_negative_power;
+	private $left_y_min_negative_power;
+	private $left_y_min_positive_power;
+	private $left_y_max_positive_power;
+	private $left_y_min_positive;
+	private $left_y_max_negative;
+	private $left_y_lower_power_shift;
+	private $left_y_upper_power_shift;
+
 	private $left_y_interval;
 	private $left_y_units;
 	private $left_y_power;
@@ -103,10 +116,23 @@ class CSvgGraph extends CSvg {
 	private $left_y_zero;
 
 	private $show_right_y_axis;
+	private $right_y_scale;
 	private $right_y_min;
 	private $right_y_min_calculated;
 	private $right_y_max;
 	private $right_y_max_calculated;
+
+	// Logarithmic scale variables
+	private $right_y_has_zero = false;
+	private $right_y_min_negative_power;
+	private $right_y_max_negative_power;
+	private $right_y_min_positive_power;
+	private $right_y_max_positive_power;
+	private $right_y_min_positive;
+	private $right_y_max_negative;
+	private $right_y_lower_power_shift;
+	private $right_y_upper_power_shift;
+
 	private $right_y_interval;
 	private $right_y_units;
 	private $right_y_power;
@@ -174,6 +200,7 @@ class CSvgGraph extends CSvg {
 		$this->time_till =  $options['time_period']['time_to'];
 
 		$this->show_left_y_axis = $options['axes']['show_left_y_axis'];
+		$this->left_y_scale = $options['axes']['left_y_scale'];
 		$this->left_y_min = $options['axes']['left_y_min'];
 		$this->left_y_max = $options['axes']['left_y_max'];
 		$this->left_y_units = $options['axes']['left_y_units'] !== null
@@ -181,6 +208,7 @@ class CSvgGraph extends CSvg {
 			: null;
 
 		$this->show_right_y_axis = $options['axes']['show_right_y_axis'];
+		$this->right_y_scale = $options['axes']['right_y_scale'];
 		$this->right_y_min = $options['axes']['right_y_min'];
 		$this->right_y_max = $options['axes']['right_y_max'];
 		$this->right_y_units = $options['axes']['right_y_units'] !== null
@@ -316,6 +344,65 @@ class CSvgGraph extends CSvg {
 	}
 
 	/**
+	 * Calculate missing data for given set of $points according given $missingdatafunc.
+	 *
+	 * @param array $points           Array of metric points to modify, where key is metric timestamp.
+	 * @param int   $missingdatafunc  Type of function, allowed value:
+	 *                                SVG_GRAPH_MISSING_DATA_TREAT_AS_ZERO, SVG_GRAPH_MISSING_DATA_NONE,
+	 *                                SVG_GRAPH_MISSING_DATA_CONNECTED
+	 *
+	 * @return array  Array of calculated missing data points.
+	 */
+	public static function getMissingData(array $points, int $missingdatafunc): array {
+		// Get average distance between points to detect gaps of missing data.
+		$prev_clock = null;
+		$points_distance = [];
+		foreach ($points as $clock => $point) {
+			if ($prev_clock !== null) {
+				$points_distance[] = $clock - $prev_clock;
+			}
+			$prev_clock = $clock;
+		}
+
+		/**
+		 * $threshold          is a minimal period of time at what we assume that data point is missed;
+		 * $average_distance   is an average distance between existing data points;
+		 * $gap_interval       is a time distance between missing points used to fulfill gaps of missing data.
+		 *                     It's unique for each gap.
+		 */
+		$average_distance = $points_distance ? array_sum($points_distance) / count($points_distance) : 0;
+		$threshold = $points_distance ? $average_distance * 3 : 0;
+
+		// Add missing values.
+		$prev_point = null;
+		$prev_clock = null;
+		$missing_points = [];
+		foreach ($points as $clock => $point) {
+			if ($prev_clock !== null && ($clock - $prev_clock) > $threshold) {
+				$gap_interval = floor(($clock - $prev_clock) / $threshold);
+
+				if ($missingdatafunc == SVG_GRAPH_MISSING_DATA_NONE) {
+					$missing_points[$prev_clock + $gap_interval] = null;
+				}
+				elseif ($missingdatafunc == SVG_GRAPH_MISSING_DATA_TREAT_AS_ZERO) {
+					$value = ['min' => 0, 'avg' => 0, 'max' => 0];
+
+					$missing_points[$prev_clock + $gap_interval] = $value;
+					$missing_points[$clock - $gap_interval] = $value;
+				}
+				elseif ($missingdatafunc == SVG_GRAPH_MISSING_DATA_LAST_KNOWN) {
+					$missing_points[$clock - $gap_interval] = $prev_point;
+				}
+			}
+
+			$prev_clock = $clock;
+			$prev_point = $point;
+		}
+
+		return $missing_points;
+	}
+
+	/**
 	 * Modifies metric data and Y value range according specified missing data function.
 	 */
 	private function applyMissingDataFunc(): void {
@@ -335,7 +422,7 @@ class CSvgGraph extends CSvg {
 			}
 
 			$points = &$this->points[$index];
-			$missing_data_points = $this->getMissingData($points, $missing_data_function);
+			$missing_data_points = self::getMissingData($points, $missing_data_function);
 
 			// Sort according new clock times (array keys).
 			$points += $missing_data_points;
@@ -611,11 +698,19 @@ class CSvgGraph extends CSvg {
 	 * Calculate minimal and maximum values, canvas size, margins and offsets for graph canvas inside SVG element.
 	 */
 	private function calculateDimensions(): void {
+		$has_logarithmic_scale = $this->left_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC
+			|| $this->right_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC;
+
 		foreach ($this->metrics as $index => $metric) {
 			if ($metric['options']['stacked'] == SVG_GRAPH_STACKED_ON) {
 				if (!in_array($metric['options']['type'], [SVG_GRAPH_TYPE_LINE, SVG_GRAPH_TYPE_STAIRCASE])
 						|| !array_key_exists($index, $this->stacked_points)) {
 					continue;
+				}
+
+				if ($has_logarithmic_scale) {
+					$min_positive = null;
+					$max_negative = null;
 				}
 
 				$min_value = null;
@@ -624,6 +719,19 @@ class CSvgGraph extends CSvg {
 				foreach ($this->stacked_points[$index] as $fragment) {
 					for ($fr_index = $fragment['line_from']; $fr_index <= $fragment['line_to']; $fr_index++) {
 						$point_value = $fragment['area'][$fr_index][1];
+
+						if ($has_logarithmic_scale) {
+							if ($point_value < 0) {
+								if ($max_negative === null || $max_negative < $point_value) {
+									$max_negative = (float) $point_value;
+								}
+							}
+							elseif ($point_value > 0) {
+								if ($min_positive === null || $min_positive > $point_value) {
+									$min_positive = (float) $point_value;
+								}
+							}
+						}
 
 						if ($max_value === null || $max_value < $point_value) {
 							$max_value = (float) $point_value;
@@ -637,6 +745,11 @@ class CSvgGraph extends CSvg {
 			elseif (array_key_exists($index, $this->points)) {
 				$min_value = null;
 				$max_value = null;
+
+				if ($has_logarithmic_scale) {
+					$min_positive = null;
+					$max_negative = null;
+				}
 
 				foreach ($this->points[$index] as $points) {
 					foreach ($points as $point) {
@@ -659,6 +772,21 @@ class CSvgGraph extends CSvg {
 								break;
 						}
 
+						if ($has_logarithmic_scale) {
+							foreach ([$point_min, $point_max] as $point_value) {
+								if ($point_value < 0) {
+									if ($max_negative === null || $max_negative < $point_value) {
+										$max_negative = (float) $point_value;
+									}
+								}
+								elseif ($point_value > 0) {
+									if ($min_positive === null || $min_positive > $point_value) {
+										$min_positive = (float) $point_value;
+									}
+								}
+							}
+						}
+
 						if ($min_value === null || $min_value > $point_min) {
 							$min_value = (float) $point_min;
 						}
@@ -679,6 +807,16 @@ class CSvgGraph extends CSvg {
 				if ($this->max_value_left === null || $this->max_value_left < $max_value) {
 					$this->max_value_left = $max_value;
 				}
+
+				if ($this->left_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					if ($this->left_y_min_positive === null || $this->left_y_min_positive > $min_positive) {
+						$this->left_y_min_positive = $min_positive;
+					}
+
+					if ($this->left_y_max_negative === null || $this->left_y_max_negative < $max_negative) {
+						$this->left_y_max_negative = $max_negative;
+					}
+				}
 			}
 			else {
 				if ($this->min_value_right === null || $this->min_value_right > $min_value) {
@@ -686,6 +824,16 @@ class CSvgGraph extends CSvg {
 				}
 				if ($this->max_value_right === null || $this->max_value_right < $max_value) {
 					$this->max_value_right = $max_value;
+				}
+
+				if ($this->right_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					if ($this->right_y_min_positive === null || $this->right_y_min_positive > $min_positive) {
+						$this->right_y_min_positive = $min_positive;
+					}
+
+					if ($this->right_y_max_negative === null || $this->right_y_max_negative < $max_negative) {
+						$this->right_y_max_negative = $max_negative;
+					}
 				}
 			}
 		}
@@ -712,6 +860,23 @@ class CSvgGraph extends CSvg {
 						if ($this->max_value_left === null || $this->max_value_left < $bar_stack_max) {
 							$this->max_value_left = $bar_stack_max;
 						}
+
+						if ($this->left_y_scale === SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+							foreach ([$bar_stack_min, $bar_stack_max] as $bar_value) {
+								if ($bar_value < 0) {
+									if ($this->left_y_max_negative === null
+											|| $this->left_y_max_negative < $bar_value) {
+										$this->left_y_max_negative = $bar_value;
+									}
+								}
+								elseif ($bar_value > 0) {
+									if ($this->left_y_min_positive === null
+											|| $this->left_y_min_positive > $bar_value) {
+										$this->left_y_min_positive = $bar_value;
+									}
+								}
+							}
+						}
 					}
 					else {
 						if ($this->min_value_right === null || $this->min_value_right > $bar_stack_min) {
@@ -719,6 +884,23 @@ class CSvgGraph extends CSvg {
 						}
 						if ($this->max_value_right === null || $this->max_value_right < $bar_stack_max) {
 							$this->max_value_right = $bar_stack_max;
+						}
+
+						if ($this->right_y_scale === SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+							foreach ([$bar_stack_min, $bar_stack_max] as $bar_value) {
+								if ($bar_value < 0) {
+									if ($this->right_y_max_negative === null
+											|| $this->right_y_max_negative < $bar_value) {
+										$this->right_y_max_negative = $bar_value;
+									}
+								}
+								elseif ($bar_value > 0) {
+									if ($this->right_y_min_positive === null
+											|| $this->right_y_min_positive > $bar_value) {
+										$this->right_y_min_positive = $bar_value;
+									}
+								}
+							}
 						}
 					}
 				}
@@ -771,22 +953,45 @@ class CSvgGraph extends CSvg {
 			$this->left_y_max = $this->max_value_left ?: 1;
 		}
 
-		$calc_power = $this->left_y_units === '' || $this->left_y_units[0] !== '!';
+		if ($this->left_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+			$result = calculateLogarithmicGraphScaleExtremes($this->left_y_min, $this->left_y_max,
+				$this->left_y_min_positive, $this->left_y_max_negative, $this->left_y_min_calculated,
+				$this->left_y_max_calculated, $rows_min, $rows_max
+			);
 
-		$result = calculateGraphScaleExtremes($this->left_y_min, $this->left_y_max, $this->left_y_units, $calc_power,
-			$this->left_y_min_calculated, $this->left_y_max_calculated, $rows_min, $rows_max
-		);
+			[
+				'min' => $this->left_y_min,
+				'max' => $this->left_y_max,
+				'max_positive_power' => $this->left_y_max_positive_power,
+				'min_positive_power' => $this->left_y_min_positive_power,
+				'min_negative_power' => $this->left_y_min_negative_power,
+				'max_negative_power' => $this->left_y_max_negative_power,
+				'lower_power_shift' => $this->left_y_lower_power_shift,
+				'upper_power_shift' => $this->left_y_upper_power_shift,
+				'interval' => $this->left_y_interval
+			] = $result;
 
-		[
-			'min' => $this->left_y_min,
-			'max' => $this->left_y_max,
-			'interval' => $this->left_y_interval,
-			'power' => $this->left_y_power
-		] = $result;
+			$this->left_y_has_zero = $this->left_y_min <= 0 && $this->left_y_max >= 0;
+		}
+		else {
+			$calc_power = $this->left_y_units === '' || $this->left_y_units[0] !== '!';
+
+			$result = calculateGraphScaleExtremes($this->left_y_min, $this->left_y_max, $this->left_y_units,
+				$calc_power, $this->left_y_min_calculated, $this->left_y_max_calculated, $rows_min, $rows_max
+			);
+
+			[
+				'min' => $this->left_y_min,
+				'max' => $this->left_y_max,
+				'interval' => $this->left_y_interval,
+				'power' => $this->left_y_power
+			] = $result;
+		}
 
 		// Calculate vertical scale parameters for right side.
 
-		if ($this->show_left_y_axis && $this->left_y_min_calculated && $this->left_y_max_calculated) {
+		if ($this->show_left_y_axis && $this->left_y_min_calculated && $this->left_y_max_calculated
+				&& $result['rows'] != 0) {
 			$rows_min = $result['rows'];
 			$rows_max = $result['rows'];
 		}
@@ -801,18 +1006,40 @@ class CSvgGraph extends CSvg {
 			$this->right_y_max = $this->max_value_right ?: 1;
 		}
 
-		$calc_power = $this->right_y_units === '' || $this->right_y_units[0] !== '!';
+		if ($this->right_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+			$result = calculateLogarithmicGraphScaleExtremes($this->right_y_min, $this->right_y_max,
+				$this->right_y_min_positive, $this->right_y_max_negative, $this->right_y_min_calculated,
+				$this->right_y_max_calculated, $rows_min, $rows_max
+			);
 
-		$result = calculateGraphScaleExtremes($this->right_y_min, $this->right_y_max, $this->right_y_units, $calc_power,
-			$this->right_y_min_calculated, $this->right_y_max_calculated, $rows_min, $rows_max
-		);
+			[
+				'min' => $this->right_y_min,
+				'max' => $this->right_y_max,
+				'max_positive_power' => $this->right_y_max_positive_power,
+				'min_positive_power' => $this->right_y_min_positive_power,
+				'min_negative_power' => $this->right_y_min_negative_power,
+				'max_negative_power' => $this->right_y_max_negative_power,
+				'lower_power_shift' => $this->right_y_lower_power_shift,
+				'upper_power_shift' => $this->right_y_upper_power_shift,
+				'interval' => $this->right_y_interval
+			] = $result;
 
-		[
-			'min' => $this->right_y_min,
-			'max' => $this->right_y_max,
-			'interval' => $this->right_y_interval,
-			'power' => $this->right_y_power
-		] = $result;
+			$this->right_y_has_zero = $this->right_y_min <= 0 && $this->right_y_max >= 0;
+		}
+		else {
+			$calc_power = $this->right_y_units === '' || $this->right_y_units[0] !== '!';
+
+			$result = calculateGraphScaleExtremes($this->right_y_min, $this->right_y_max, $this->right_y_units,
+				$calc_power, $this->right_y_min_calculated, $this->right_y_max_calculated, $rows_min, $rows_max
+			);
+
+			[
+				'min' => $this->right_y_min,
+				'max' => $this->right_y_max,
+				'interval' => $this->right_y_interval,
+				'power' => $this->right_y_power
+			] = $result;
+		}
 
 		// Define canvas dimensions and offsets, except canvas height and bottom offset.
 		if ($this->show_left_y_axis) {
@@ -855,23 +1082,41 @@ class CSvgGraph extends CSvg {
 		$this->canvas_x = $this->offset_left;
 
 		// Calculate vertical zero position.
+		if ($this->left_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+			$relative_zero_position = calculateLogarithmicRelativePosition($this->left_y_max_negative_power,
+				$this->left_y_min_negative_power, $this->left_y_min_positive_power, $this->left_y_max_positive_power, 0
+			);
 
-		if ($this->left_y_max - $this->left_y_min == INF) {
-			$this->left_y_zero = $this->canvas_y + $this->canvas_height
-				* max(0, min(1, $this->left_y_max / 10 / ($this->left_y_max / 10 - $this->left_y_min / 10)));
+			$this->left_y_zero = $this->canvas_y + $this->canvas_height * max(0, min(1, $relative_zero_position));
 		}
 		else {
-			$this->left_y_zero = $this->canvas_y + $this->canvas_height
-				* max(0, min(1, $this->left_y_max / ($this->left_y_max - $this->left_y_min)));
+			if ($this->left_y_max - $this->left_y_min == INF) {
+				$this->left_y_zero = $this->canvas_y + $this->canvas_height
+					* max(0, min(1, $this->left_y_max / 10 / ($this->left_y_max / 10 - $this->left_y_min / 10)));
+			}
+			else {
+				$this->left_y_zero = $this->canvas_y + $this->canvas_height
+					* max(0, min(1, $this->left_y_max / ($this->left_y_max - $this->left_y_min)));
+			}
 		}
 
-		if ($this->right_y_max - $this->right_y_min == INF) {
-			$this->right_y_zero = $this->canvas_y + $this->canvas_height
-				* max(0, min(1, $this->right_y_max / 10 / ($this->right_y_max / 10 - $this->right_y_min / 10)));
+		if ($this->right_y_scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+			$relative_zero_position = calculateLogarithmicRelativePosition($this->right_y_max_negative_power,
+				$this->right_y_min_negative_power, $this->right_y_min_positive_power, $this->right_y_max_positive_power,
+				0
+			);
+
+			$this->right_y_zero = $this->canvas_y + $this->canvas_height * max(0, min(1, $relative_zero_position));
 		}
 		else {
-			$this->right_y_zero = $this->canvas_y + $this->canvas_height
-				* max(0, min(1, $this->right_y_max / ($this->right_y_max - $this->right_y_min)));
+			if ($this->right_y_max - $this->right_y_min == INF) {
+				$this->right_y_zero = $this->canvas_y + $this->canvas_height
+					* max(0, min(1, $this->right_y_max / 10 / ($this->right_y_max / 10 - $this->right_y_min / 10)));
+			}
+			else {
+				$this->right_y_zero = $this->canvas_y + $this->canvas_height
+					* max(0, min(1, $this->right_y_max / ($this->right_y_max - $this->right_y_min)));
+			}
 		}
 	}
 
@@ -894,10 +1139,26 @@ class CSvgGraph extends CSvg {
 			if ($metric['options']['axisy'] == GRAPH_YAXIS_SIDE_RIGHT) {
 				$min_value = $this->right_y_min;
 				$max_value = $this->right_y_max;
+				$scale = $this->right_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$max_positive_power = $this->right_y_max_positive_power;
+					$max_negative_power = $this->right_y_max_negative_power;
+					$min_positive_power = $this->right_y_min_positive_power;
+					$min_negative_power = $this->right_y_min_negative_power;
+				}
 			}
 			else {
 				$min_value = $this->left_y_min;
 				$max_value = $this->left_y_max;
+				$scale = $this->left_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$max_positive_power = $this->left_y_max_positive_power;
+					$max_negative_power = $this->left_y_max_negative_power;
+					$min_positive_power = $this->left_y_min_positive_power;
+					$min_negative_power = $this->left_y_min_negative_power;
+				}
 			}
 
 			$time_range = ($this->time_till - $this->time_from) ?: 1;
@@ -917,15 +1178,24 @@ class CSvgGraph extends CSvg {
 							$x = $this->canvas_x + $this->canvas_width
 								- $this->canvas_width * ($this->time_till - $clock + $timeshift) / $time_range;
 
-							if ($max_value - $min_value == INF) {
+							if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
 								$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-									$max_value / 10 - $value / 10, 1 / ($max_value / 10 - $min_value / 10)
+									calculateLogarithmicRelativePosition($max_negative_power, $min_negative_power,
+										$min_positive_power, $max_positive_power, $value
+									)
 								]);
 							}
 							else {
-								$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-									$max_value - $value, 1 / ($max_value - $min_value)
-								]);
+								if ($max_value - $min_value == INF) {
+									$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+										$max_value / 10 - $value / 10, 1 / ($max_value / 10 - $min_value / 10)
+									]);
+								}
+								else {
+									$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+										$max_value - $value, 1 / ($max_value - $min_value)
+									]);
+								}
 							}
 
 							if (!$in_range) {
@@ -971,10 +1241,26 @@ class CSvgGraph extends CSvg {
 			if ($metric['options']['axisy'] == GRAPH_YAXIS_SIDE_RIGHT) {
 				$min_value = $this->right_y_min;
 				$max_value = $this->right_y_max;
+				$scale = $this->right_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$max_positive_power = $this->right_y_max_positive_power;
+					$max_negative_power = $this->right_y_max_negative_power;
+					$min_positive_power = $this->right_y_min_positive_power;
+					$min_negative_power = $this->right_y_min_negative_power;
+				}
 			}
 			else {
 				$min_value = $this->left_y_min;
 				$max_value = $this->left_y_max;
+				$scale = $this->left_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$max_positive_power = $this->left_y_max_positive_power;
+					$max_negative_power = $this->left_y_max_negative_power;
+					$min_positive_power = $this->left_y_min_positive_power;
+					$min_negative_power = $this->left_y_min_negative_power;
+				}
 			}
 
 			foreach ($this->stacked_points[$index] as $fragment_index => $fragment) {
@@ -984,15 +1270,24 @@ class CSvgGraph extends CSvg {
 					$x = $this->canvas_x + $this->canvas_width
 						- $this->canvas_width * ($this->time_till - $stacked_point[0]) / $time_range;
 
-					if ($max_value - $min_value == INF) {
+					if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
 						$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-							$max_value / 10 - $stacked_point[1] / 10, 1 / ($max_value / 10 - $min_value / 10)
+							calculateLogarithmicRelativePosition($max_negative_power, $min_negative_power,
+								$min_positive_power, $max_positive_power, $stacked_point[1]
+							)
 						]);
 					}
 					else {
-						$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-							$max_value - $stacked_point[1], 1 / ($max_value - $min_value)
-						]);
+						if ($max_value - $min_value == INF) {
+							$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+								$max_value / 10 - $stacked_point[1] / 10, 1 / ($max_value / 10 - $min_value / 10)
+							]);
+						}
+						else {
+							$y = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+								$max_value - $stacked_point[1], 1 / ($max_value - $min_value)
+							]);
+						}
 					}
 
 					$y = min($y_max, max($y_min, $y));
@@ -1027,8 +1322,30 @@ class CSvgGraph extends CSvg {
 		$time_per_px = $time_range / $this->canvas_width;
 
 		foreach ($this->bar_points as $side => $side_bar_data) {
-			$min_value = $side == GRAPH_YAXIS_SIDE_RIGHT ? $this->right_y_min : $this->left_y_min;
-			$max_value = $side == GRAPH_YAXIS_SIDE_RIGHT ? $this->right_y_max : $this->left_y_max;
+			if ($side == GRAPH_YAXIS_SIDE_RIGHT) {
+				$min_value = $this->right_y_min;
+				$max_value = $this->right_y_max;
+				$scale = $this->right_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$max_positive_power = $this->right_y_max_positive_power;
+					$max_negative_power = $this->right_y_max_negative_power;
+					$min_positive_power = $this->right_y_min_positive_power;
+					$min_negative_power = $this->right_y_min_negative_power;
+				}
+			}
+			else {
+				$min_value = $this->left_y_min;
+				$max_value = $this->left_y_max;
+				$scale = $this->left_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$max_positive_power = $this->left_y_max_positive_power;
+					$max_negative_power = $this->left_y_max_negative_power;
+					$min_positive_power = $this->left_y_min_positive_power;
+					$min_negative_power = $this->left_y_min_negative_power;
+				}
+			}
 
 			$clock_min_diff = max(1, round($time_range * .25));
 
@@ -1081,21 +1398,36 @@ class CSvgGraph extends CSvg {
 						$value_to = $sum + $point_value;
 						$sum += $point_value;
 
-						if ($max_value - $min_value == INF) {
+						if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
 							$bar_y1 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-								$max_value / 10 - $value_from / 10, 1 / ($max_value / 10 - $min_value / 10)
+								calculateLogarithmicRelativePosition($max_negative_power, $min_negative_power,
+									$min_positive_power, $max_positive_power, $value_from
+								)
 							]);
+
 							$bar_y2 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-								$max_value / 10 - $value_to / 10, 1 / ($max_value / 10 - $min_value / 10)
+								calculateLogarithmicRelativePosition($max_negative_power, $min_negative_power,
+									$min_positive_power, $max_positive_power, $value_to
+								)
 							]);
 						}
 						else {
-							$bar_y1 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-								$max_value - $value_from, 1 / ($max_value - $min_value)
-							]);
-							$bar_y2 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
-								$max_value - $value_to, 1 / ($max_value - $min_value)
-							]);
+							if ($max_value - $min_value == INF) {
+								$bar_y1 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+									$max_value / 10 - $value_from / 10, 1 / ($max_value / 10 - $min_value / 10)
+								]);
+								$bar_y2 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+									$max_value / 10 - $value_to / 10, 1 / ($max_value / 10 - $min_value / 10)
+								]);
+							}
+							else {
+								$bar_y1 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+									$max_value - $value_from, 1 / ($max_value - $min_value)
+								]);
+								$bar_y2 = $this->canvas_y + CMathHelper::safeMul([$this->canvas_height,
+									$max_value - $value_to, 1 / ($max_value - $min_value)
+								]);
+							}
 						}
 
 						$bar_y1 = min($y_max, max($y_min, $bar_y1));
@@ -1389,16 +1721,38 @@ class CSvgGraph extends CSvg {
 			if ($side == GRAPH_YAXIS_SIDE_LEFT) {
 				$percent = $this->percentile_left_value;
 				$units = $this->left_y_units;
-				$y_min = $this->left_y_min;
-				$y_max = $this->left_y_max;
 				$color = $this->graph_theme['leftpercentilecolor'];
+				$scale = $this->left_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$scale_boundaries = [
+						'max_negative_power' => $this->left_y_max_negative_power,
+						'min_negative_power' => $this->left_y_min_negative_power,
+						'min_positive_power' => $this->left_y_min_positive_power,
+						'max_positive_power' => $this->left_y_max_positive_power
+					];
+				}
+				else {
+					$scale_boundaries = ['min' => $this->left_y_min, 'max' => $this->left_y_max];
+				}
 			}
 			else {
 				$percent = $this->percentile_right_value;
 				$units = $this->right_y_units;
-				$y_min = $this->right_y_min;
-				$y_max = $this->right_y_max;
 				$color = $this->graph_theme['rightpercentilecolor'];
+				$scale = $this->right_y_scale;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$scale_boundaries = [
+						'max_negative_power' => $this->right_y_max_negative_power,
+						'min_negative_power' => $this->right_y_min_negative_power,
+						'min_positive_power' => $this->right_y_min_positive_power,
+						'max_positive_power' => $this->right_y_max_positive_power
+					];
+				}
+				else {
+					$scale_boundaries = ['min' => $this->right_y_min, 'max' => $this->right_y_max];
+				}
 			}
 
 			if ($points) {
@@ -1411,7 +1765,9 @@ class CSvgGraph extends CSvg {
 				]);
 
 				$this->addItem(
-					(new CSvgGraphPercentile(_s('%1$sth percentile: %2$s', $percent, $label), $value, $y_min, $y_max))
+					(new CSvgGraphPercentile(_s('%1$sth percentile: %2$s', $percent, $label), $value, $scale,
+						$scale_boundaries
+					))
 						->setPosition($this->canvas_x, $this->canvas_y)
 						->setSize($this->canvas_width, $this->canvas_height)
 						->setColor('#'.$color)
@@ -1553,65 +1909,6 @@ class CSvgGraph extends CSvg {
 	}
 
 	/**
-	 * Calculate missing data for given set of $points according given $missingdatafunc.
-	 *
-	 * @param array $points           Array of metric points to modify, where key is metric timestamp.
-	 * @param int   $missingdatafunc  Type of function, allowed value:
-	 *                                SVG_GRAPH_MISSING_DATA_TREAT_AS_ZERO, SVG_GRAPH_MISSING_DATA_NONE,
-	 *                                SVG_GRAPH_MISSING_DATA_CONNECTED
-	 *
-	 * @return array  Array of calculated missing data points.
-	 */
-	private function getMissingData(array $points, int $missingdatafunc): array {
-		// Get average distance between points to detect gaps of missing data.
-		$prev_clock = null;
-		$points_distance = [];
-		foreach ($points as $clock => $point) {
-			if ($prev_clock !== null) {
-				$points_distance[] = $clock - $prev_clock;
-			}
-			$prev_clock = $clock;
-		}
-
-		/**
-		 * $threshold          is a minimal period of time at what we assume that data point is missed;
-		 * $average_distance   is an average distance between existing data points;
-		 * $gap_interval       is a time distance between missing points used to fulfill gaps of missing data.
-		 *                     It's unique for each gap.
-		 */
-		$average_distance = $points_distance ? array_sum($points_distance) / count($points_distance) : 0;
-		$threshold = $points_distance ? $average_distance * 3 : 0;
-
-		// Add missing values.
-		$prev_point = null;
-		$prev_clock = null;
-		$missing_points = [];
-		foreach ($points as $clock => $point) {
-			if ($prev_clock !== null && ($clock - $prev_clock) > $threshold) {
-				$gap_interval = floor(($clock - $prev_clock) / $threshold);
-
-				if ($missingdatafunc == SVG_GRAPH_MISSING_DATA_NONE) {
-					$missing_points[$prev_clock + $gap_interval] = null;
-				}
-				elseif ($missingdatafunc == SVG_GRAPH_MISSING_DATA_TREAT_AS_ZERO) {
-					$value = ['min' => 0, 'avg' => 0, 'max' => 0];
-
-					$missing_points[$prev_clock + $gap_interval] = $value;
-					$missing_points[$clock - $gap_interval] = $value;
-				}
-				elseif ($missingdatafunc == SVG_GRAPH_MISSING_DATA_LAST_KNOWN) {
-					$missing_points[$clock - $gap_interval] = $prev_point;
-				}
-			}
-
-			$prev_clock = $clock;
-			$prev_point = $point;
-		}
-
-		return $missing_points;
-	}
-
-	/**
 	 * Get array of X points with labels, for grid and X/Y axes. Array key is Y coordinate for SVG, value is label with
 	 * axis units.
 	 *
@@ -1628,31 +1925,73 @@ class CSvgGraph extends CSvg {
 		$interval = 1;
 		$units = '';
 		$power = 0;
+		$has_zero = true;
+		$min_positive_power = -1;
+		$max_positive_power = 0;
+		$min_negative_power = null;
+		$max_negative_power = null;
+		$lower_power_shift = 0;
+		$upper_power_shift = 0;
+		$scale = SVG_GRAPH_AXIS_SCALE_LINEAR;
 
 		if (!$empty_set) {
 			if ($side === GRAPH_YAXIS_SIDE_LEFT) {
+				$scale = $this->left_y_scale;
 				$min = $this->left_y_min;
 				$max = $this->left_y_max;
 				$min_calculated = $this->left_y_min_calculated;
 				$max_calculated = $this->left_y_max_calculated;
 				$interval = $this->left_y_interval;
 				$units = $this->left_y_units;
-				$power = $this->left_y_power;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$min_positive_power = $this->left_y_min_positive_power;
+					$max_positive_power = $this->left_y_max_positive_power;
+					$min_negative_power = $this->left_y_min_negative_power;
+					$max_negative_power = $this->left_y_max_negative_power;
+					$has_zero = $this->left_y_has_zero;
+					$lower_power_shift = $this->left_y_lower_power_shift;
+					$upper_power_shift = $this->left_y_upper_power_shift;
+				}
+				else {
+					$power = $this->left_y_power;
+				}
 			}
 			elseif ($side === GRAPH_YAXIS_SIDE_RIGHT) {
+				$scale = $this->right_y_scale;
 				$min = $this->right_y_min;
 				$max = $this->right_y_max;
 				$min_calculated = $this->right_y_min_calculated;
 				$max_calculated = $this->right_y_max_calculated;
 				$interval = $this->right_y_interval;
 				$units = $this->right_y_units;
-				$power = $this->right_y_power;
+
+				if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+					$min_positive_power = $this->right_y_min_positive_power;
+					$max_positive_power = $this->right_y_max_positive_power;
+					$min_negative_power = $this->right_y_min_negative_power;
+					$max_negative_power = $this->right_y_max_negative_power;
+					$has_zero = $this->right_y_has_zero;
+					$lower_power_shift = $this->right_y_lower_power_shift;
+					$upper_power_shift = $this->right_y_upper_power_shift;
+				}
+				else {
+					$power = $this->right_y_power;
+				}
 			}
 		}
 
-		$relative_values = calculateGraphScaleValues($min, $max, $min_calculated, $max_calculated, $interval, $units,
-			$power, 14
-		);
+		if ($scale == SVG_GRAPH_AXIS_SCALE_LOGARITHMIC) {
+			$relative_values = calculateLogarithmicGraphScaleValues($min_negative_power, $max_negative_power,
+				$min_positive_power, $max_positive_power, $has_zero, $min_calculated, $max_calculated, $interval,
+				$units, 14, $lower_power_shift, $upper_power_shift
+			);
+		}
+		else {
+			$relative_values = calculateGraphScaleValues($min, $max, $min_calculated, $max_calculated, $interval,
+				$units, $power, 14
+			);
+		}
 
 		$absolute_values = [];
 
